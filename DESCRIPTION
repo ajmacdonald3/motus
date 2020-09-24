@@ -19,6 +19,7 @@ Imports:
     httr (>= 1.4.0),
     geosphere (>= 1.5.7),
     ggplot2 (>= 3.2.0),
+    glue (>= 1.4.2),
     gridExtra (>= 2.3),
     jsonlite (>= 1.6),
     lubridate (>= 1.7.4),

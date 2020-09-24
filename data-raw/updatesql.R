@@ -1,5 +1,13 @@
+# IMPORTANT! RUN THIS ENTIRE FILE AFTER MAKING ANY CHANGES
+
 sql_versions <- dplyr::tibble()
 
+sql_versions <- rbind(
+  sql_versions,
+  cbind(date = "2020-09-24",
+        descr = "Add activityAll and gpsAll tables",
+        sql = paste0(makeTables(type = "activityAll"),
+                     makeTables(type = "gpsAll"))))
 
 sql_versions <- rbind(
   sql_versions,

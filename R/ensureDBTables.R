@@ -78,26 +78,15 @@ values
   }
   
   if (! "gps" %in% tables) {
-    sql("
-create table gps (
-gpsID   BIGINT PRIMARY KEY,                  -- id
-batchID INTEGER NOT NULL REFERENCES batches, -- batch from which this fix came
-ts      DOUBLE,                              -- system timestamp for this record
-gpsts   DOUBLE,                              -- gps timestamp
-lat     DOUBLE,                              -- latitude, decimal degrees
-lon     DOUBLE,                              -- longitude, decimal degrees
-alt     DOUBLE,                              -- altitude, metres
-quality INTEGER,
-lat_mean DOUBLE,
-lon_mean DOUBLE,
-n_fixes INTEGER
-)");
-    
-    sql("create index gps_gpsID on gps ( gpsID )")
-    
+    makeTables("gps")
     # Remove empty gps detections
     sql("DELETE FROM gps where lat = 0 and lon = 0 and alt = 0;")
-    
+  }
+  
+  if (! "gpsAll" %in% tables) {
+    makeTables("gpsAll")
+    # Remove empty gps detections
+    sql("DELETE FROM gps where lat = 0 and lon = 0 and alt = 0;")
   }
   
   if (! "batches" %in% tables) {
@@ -460,30 +449,14 @@ CREATE INDEX IF NOT EXISTS runsFilters_filterID_runID_motusTagID ON runsFilters 
   motusTagID ASC,
   probability ASC);
 ")
-    
   }
   
   if (! "activity" %in% tables) {
-    sql("CREATE TABLE IF NOT EXISTS activity (
-      batchID INTEGER,
-      motusDeviceID INTEGER,
-      ant TEXT,
-      year INTEGER,
-      month INTEGER,
-      day INTEGER,
-      hourBin INTEGER,
-      numTags INTEGER,
-      pulseCount INTEGER,
-      numRuns INTEGER,
-      numHits INTEGER,
-      run2 INTEGER,
-      run3 INTEGER,
-      run4 INTEGER,
-      run5 INTEGER,
-      run6 INTEGER,
-      run7plus INTEGER,
-      UNIQUE(batchID, ant, hourBin),
-      PRIMARY KEY (batchID, ant, hourBin));")
+    sql(makeTables(type = "activity"))
+  }
+  
+  if (! "activityAll" %in% tables) {
+    sql(makeTables(type = "activityAll"))
   }
 
   if(! "admInfo" %in% tables) {
@@ -515,35 +488,81 @@ CREATE INDEX IF NOT EXISTS runsFilters_filterID_runID_motusTagID ON runsFilters 
 
 
 makeTables <- function(type, name = type) {
+  mk <- glue::glue("CREATE TABLE IF NOT EXISTS {name} (")
+  s <- character()
+  if(type %in% c("gps", "gpsAll")) {
+    s <- glue::glue(
+      "{mk}",
+      "gpsID   BIGINT PRIMARY KEY,                  -- id",
+      "batchID INTEGER NOT NULL REFERENCES batches, -- batch from which this fix came",
+      "ts      DOUBLE,                              -- system timestamp for this record",
+      "gpsts   DOUBLE,                              -- gps timestamp",
+      "lat     DOUBLE,                              -- latitude, decimal degrees", 
+      "lon     DOUBLE,                              -- longitude, decimal degrees", 
+      "alt     DOUBLE,                              -- altitude, metres", 
+      "quality INTEGER,", 
+      "lat_mean DOUBLE,", 
+      "lon_mean DOUBLE,", 
+      "n_fixes INTEGER",
+      ");",
+      "CREATE INDEX gps_gpsID on {name} ( gpsID );") 
+  }
+  if(type %in% c("activity", "activityAll")) {
+    s <- glue::glue(
+      "{mk}", 
+      "batchID INTEGER,",
+      "motusDeviceID INTEGER,",
+      "ant TEXT,",
+      "year INTEGER,",
+      "month INTEGER,",
+      "day INTEGER,",
+      "hourBin INTEGER,",
+      "numTags INTEGER,",
+      "pulseCount INTEGER,",
+      "numRuns INTEGER,",
+      "numHits INTEGER,",
+      "run2 INTEGER,",
+      "run3 INTEGER,",
+      "run4 INTEGER,",
+      "run5 INTEGER,",
+      "run6 INTEGER,",
+      "run7plus INTEGER,",
+      "UNIQUE(batchID, ant, hourBin),",
+      "PRIMARY KEY (batchID, ant, hourBin));")
+  } 
   if(type == "tagAmbig") {
-    s <- paste0("CREATE TABLE ", name, " (
-    ambigID INTEGER PRIMARY KEY NOT NULL,  -- identifier of group of tags which are ambiguous (identical). Will be negative
-    masterAmbigID INTEGER,                 -- master ID of this ambiguity group, once different receivers have been combined
-    motusTagID1 INT,                       -- motus ID of tag in group.
-    motusTagID2 INT,                       -- motus ID of tag in group.
-    motusTagID3 INT,                       -- motus ID of tag in group.
-    motusTagID4 INT,                       -- motus ID of tag in group.
-    motusTagID5 INT,                       -- motus ID of tag in group.
-    motusTagID6 INT,                       -- motus ID of tag in group.
-    ambigProjectID INT                     -- negative ambiguity ID of deployment project. refers to key ambigProjectID in table projAmbig
-);")
-  } else if(type == "nodeData") {
-  s <- paste0("CREATE TABLE IF NOT EXISTS ", name, " (",
-    "nodeDataID BIGINT PRIMARY KEY NOT NULL,",
-    "batchID INTEGER NOT NULL,",
-    "ts FLOAT NOT NULL,",
-    "nodeNum TEXT NOT NULL,",
-    "ant TEXT NOT NULL,",
-    "sig FLOAT(24),",
-    "battery FLOAT,",
-    "temperature FLOAT,",
-    "nodets FLOAT,",
-    "firmware VARCHAR(20),",
-    "solarVolt FLOAT,",
-    "solarCurrent FLOAT,",
-    "solarCurrentCumul FLOAT,",
-    "lat FLOAT,",
-    "lon FLOAT);")
-  } else s <- character()
+    s <- glue::glue(
+      "{mk}",
+      "ambigID INTEGER PRIMARY KEY NOT NULL,  -- identifier of group of tags which are ambiguous (identical). Will be negative", 
+      "masterAmbigID INTEGER,                 -- master ID of this ambiguity group, once different receivers have been combined", 
+      "motusTagID1 INT,                       -- motus ID of tag in group.", 
+      "motusTagID2 INT,                       -- motus ID of tag in group.", 
+      "motusTagID3 INT,                       -- motus ID of tag in group.", 
+      "motusTagID4 INT,                       -- motus ID of tag in group.", 
+      "motusTagID5 INT,                       -- motus ID of tag in group.", 
+      "motusTagID6 INT,                       -- motus ID of tag in group.", 
+      "ambigProjectID INT                     -- negative ambiguity ID of deployment project. refers to key ambigProjectID in table projAmbig", 
+      ");")
+  } 
+  
+  if(type == "nodeData") {
+    s <- glue::glue(
+      "{mk}",
+      "nodeDataID BIGINT PRIMARY KEY NOT NULL,",
+      "batchID INTEGER NOT NULL,",
+      "ts FLOAT NOT NULL,",
+      "nodeNum TEXT NOT NULL,",
+      "ant TEXT NOT NULL,",
+      "sig FLOAT(24),",
+      "battery FLOAT,",
+      "temperature FLOAT,",
+      "nodets FLOAT,",
+      "firmware VARCHAR(20),",
+      "solarVolt FLOAT,",
+      "solarCurrent FLOAT,",
+      "solarCurrentCumul FLOAT,",
+      "lat FLOAT,",
+      "lon FLOAT);")
+  } 
   s
 }
