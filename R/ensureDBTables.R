@@ -505,7 +505,7 @@ makeTables <- function(type, name = type) {
       "lon_mean DOUBLE,", 
       "n_fixes INTEGER",
       ");",
-      "CREATE INDEX gps_gpsID on {name} ( gpsID );") 
+      "CREATE INDEX {name}_gpsID on {name} ( gpsID );", .sep = "\n") 
   }
   if(type %in% c("activity", "activityAll")) {
     s <- glue::glue(
@@ -528,7 +528,7 @@ makeTables <- function(type, name = type) {
       "run6 INTEGER,",
       "run7plus INTEGER,",
       "UNIQUE(batchID, ant, hourBin),",
-      "PRIMARY KEY (batchID, ant, hourBin));")
+      "PRIMARY KEY (batchID, ant, hourBin));", .sep = "\n")
   } 
   if(type == "tagAmbig") {
     s <- glue::glue(
@@ -542,7 +542,7 @@ makeTables <- function(type, name = type) {
       "motusTagID5 INT,                       -- motus ID of tag in group.", 
       "motusTagID6 INT,                       -- motus ID of tag in group.", 
       "ambigProjectID INT                     -- negative ambiguity ID of deployment project. refers to key ambigProjectID in table projAmbig", 
-      ");")
+      ");", .sep = "\n")
   } 
   
   if(type == "nodeData") {
@@ -562,7 +562,7 @@ makeTables <- function(type, name = type) {
       "solarCurrent FLOAT,",
       "solarCurrentCumul FLOAT,",
       "lat FLOAT,",
-      "lon FLOAT);")
+      "lon FLOAT);", s.ep = "\n")
   } 
   s
 }
