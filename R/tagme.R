@@ -94,7 +94,7 @@ tagme = function(projRecv, update = TRUE, new = FALSE, dir = getwd(),
     if (! have && is.character(projRecv)) {
         deviceID = srvDeviceIDForReceiver(projRecv)[[2]]
         if (! isTRUE(as.integer(deviceID) > 0))
-            stop("Either the serial number '", projRecv, "' is not for a receiver registered with motus\nor you don't have permission to access it")
+            stop("Either the serial number '", projRecv, "' is not for a receiver registered with motus\nor you don't have permission to access it", call. = FALSE)
     } else {
         deviceID = NULL
     }

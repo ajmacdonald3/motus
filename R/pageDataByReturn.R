@@ -43,7 +43,6 @@ pageDataByReturn <- function(src, table, resume = FALSE,
     dbInsertOrReplace(sql$con, table, b)
     message(msg, sprintf("got %6d %s records", nrow(b), table))
     added <- added + nrow(b)
-    browser()
     
     # Page forward
     batchID <- b$batchID[nrow(b)]
