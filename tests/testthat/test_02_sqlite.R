@@ -19,7 +19,7 @@ test_that("ensureDBTables() creates database", {
   expect_message(ensureDBTables(temp, 176, quiet = FALSE))
   expect_silent(ensureDBTables(temp, 176, quiet = TRUE))
   expect_silent(temp <- dbplyr::src_dbi(DBI::dbConnect(RSQLite::SQLite(), "temp.motus")))
-  expect_length(t <- DBI::dbListTables(temp$con), 27)
+  expect_length(t <- DBI::dbListTables(temp$con), 29)
   
   # Expect columns in the tables
   for(i in t) expect_gte(ncol(dplyr::tbl(temp$con, !!i)), 2)
@@ -31,6 +31,9 @@ test_that("ensureDBTables() creates database", {
   }
   expect_equal(nrow(DBI::dbGetQuery(temp$con, "SELECT * FROM admInfo")), 1)
   expect_equal(nrow(DBI::dbGetQuery(temp$con, "SELECT * FROM meta")), 2)
+  
+  # Expect activityAll and gpsAll
+  expect_true(all(c("activityAll", "gpsAll") %in% t))
   
   # Expect new columns age/sex in tagDeps
   expect_true(all(c("age", "sex") %in% DBI::dbListFields(temp$con, "tagDeps")))
@@ -106,15 +109,22 @@ test_that("Missing tables recreated silently", {
 
 
 test_that("check for custom views before update", {
+  # Get clean database
   sample_auth()
+  unlink("project-176.motus")
+  unlink(list.files(pattern = "project-176_custom_views"))
+  file.copy(system.file("extdata", "project-176.motus", package = "motus"), ".")
+  
+  # Add custom view
   tags <- DBI::dbConnect(RSQLite::SQLite(), "project-176.motus")
   DBI::dbExecute(
     tags, 
     "CREATE VIEW alltags_fast AS SELECT hitID, runID, ts FROM alltags WHERE sig = 52;")
   DBI::dbExecute(tags, "UPDATE admInfo SET db_version = '2019-01-01 00:00:00'")
   DBI::dbDisconnect(tags)
-  
   tags <- tagme(176, update = FALSE)
+  
+  # Test for handling of custom view
   expect_error(checkViews(src = tags, update_sql = sql_versions$sql, response = 2),
                "Cannot update local database if conflicting custom views")
   expect_true("alltags_fast" %in% DBI::dbListTables(tags$con))

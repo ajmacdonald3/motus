@@ -1,20 +1,24 @@
 
-pageDataByReturn <- function(src, table, resume = FALSE,
+pageDataByReturn <- function(src, table, resume = FALSE, returnIDtype = "batchID",
                              pageInitial, pageForward) {
   
   # Check tables and update to include table if necessary
   ensureDBTables(src, projRecv = get_projRecv(src))
   sql <- safeSQL(src)
   
-  batchID <- 0
+  returnID <- 0
   # Check where to start
   if(resume) {
+    msg <- sprintf("%s: checking for new data", table)
     # If updating, start with last batch downloaded (a bit of overlap)
-    batchID <- sql(paste0("select ifnull(max(batchID), 0) from ", table))[[1]]  
+    returnID <- sql(glue("select ifnull(max({retrunIDtype}), 0) from ", table))[[1]]  
   } else {
+    msg <- sprintf("%s: downloading all data", table)
     # Otherwise remove all rows and start again
     DBI::dbExecute(src$con, paste0("DELETE FROM ", table))
   }
+  
+  
   
   # If length zero, then no batches to get data for
   data_name <- get_projRecv(src)
@@ -26,27 +30,30 @@ pageDataByReturn <- function(src, table, resume = FALSE,
   }
 
   # Announce
-  message(sprintf("%s: checking records for new ", table, " data"))
+  message(msg)
   
   added <- 0
   rounds <- 0
   
   # Get batch
-  b <- pageInitial(batchID, projectID)
+  b <- pageInitial(returnID, projectID)
+  
+  # Progress messages
+  message(sprintf(returnIDtype, " %8d: ", returnID), sprintf("got %6d %s records", nrow(b), table))
   
   repeat {
     
-    # Progress messages
-    msg <- sprintf("batchID %8d: ", batchID)
-    
     # Save Previous batch
     dbInsertOrReplace(sql$con, table, b)
-    message(msg, sprintf("got %6d %s records", nrow(b), table))
     added <- added + nrow(b)
     
     # Page forward
-    batchID <- b$batchID[nrow(b)]
-    b <- pageForward(b, batchID, projectID)
+    returnID <- b[[returnIDtype]][nrow(b)]
+    b <- pageForward(b, returnID, projectID)
+    
+    # Progress messages
+    message(sprintf(returnIDtype, " %8d: ", returnID), sprintf("got %6d %s records", nrow(b), table))
+    
     if(nrow(b) == 0) break
     
     # If testing, break out after x batches
@@ -58,3 +65,4 @@ pageDataByReturn <- function(src, table, resume = FALSE,
   
   src
 }
+  

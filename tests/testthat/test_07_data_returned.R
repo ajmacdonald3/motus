@@ -9,7 +9,9 @@ teardown({
   unlink("SG-3115BBBK1127.motus")
 })
 
-test_that("Data returned as expected", {
+
+# Local auth Tags ---------------------------------------------------------
+test_that("Tag data returned as expected", {
   skip_on_cran()
   skip_if_no_auth()
   
@@ -67,7 +69,9 @@ test_that("Data returned as expected", {
   options(motus.test.max = orig)
 })
 
-test_that("Data returned as expected", {
+
+# Local auth Receivers ----------------------------------------------------
+test_that("Reciever data returned as expected", {
   skip_on_cran()
   skip_if_no_auth()
   
@@ -114,4 +118,10 @@ test_that("Data returned as expected", {
   expect_true(any(a$antFreq > 1))
   
   options(motus.test.max = orig)
+})
+
+test_that("activityAll and gpsAll return for tag data", {
+  
+  
+  
 })

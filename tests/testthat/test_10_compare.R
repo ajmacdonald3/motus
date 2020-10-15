@@ -7,9 +7,10 @@ test_that("table fields match server (sample auth)", {
     RSQLite::SQLite(), 
     system.file("extdata", "project-176.motus", package = "motus"))
   
-  #expect_named(
-  #  srvActivityForAll(batchID = 53)[1,],
-  #  DBI::dbListFields(tags, "activityAll"), ignore.order = TRUE)
+  expect_true(
+    all(names(srvActivityForAll(batchID = 53)[1,]) %in%
+          DBI::dbListTables(tags, "activityAll")))
+  
   expect_true(
     all(names(srvActivityForBatches(batchID = 53)[1,]) %in%
           DBI::dbListFields(tags, "activity")))
