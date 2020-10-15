@@ -78,13 +78,13 @@ values
   }
   
   if (! "gps" %in% tables) {
-    makeTables("gps")
+    sql(makeTables("gps"))
     # Remove empty gps detections
     sql("DELETE FROM gps where lat = 0 and lon = 0 and alt = 0;")
   }
   
   if (! "gpsAll" %in% tables) {
-    makeTables("gpsAll")
+    sql(makeTables("gpsAll"))
     # Remove empty gps detections
     sql("DELETE FROM gps where lat = 0 and lon = 0 and alt = 0;")
   }
