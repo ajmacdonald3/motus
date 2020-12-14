@@ -83,9 +83,6 @@ sql_versions <- dplyr::mutate(sql_versions,
                               date = lubridate::as_datetime(as.character(date), tz = "UTC"),
                               sql = as.character(sql))
 
-usethis::use_data(sql_versions, internal = TRUE, overwrite = TRUE)
-
-
 
 
 
