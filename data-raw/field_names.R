@@ -17,58 +17,63 @@ field_names <- srvSchema() %>%
          !str_detect(column, "is_private"))
 
 
+t <- data.frame()
 
 # activity ------------------------------------------------------------------
-activity <- field_names %>%
+t <- field_names %>%
   filter(str_detect(table, "batches_activity")) %>%
   mutate(table = "activity",
          keys = column %in% c("batchID", "ant", "hourBin"),
-         uniques = column %in% c("batchID", "ant", "hourBin"))
+         uniques = column %in% c("batchID", "ant", "hourBin")) %>%
+  bind_rows(t, .)
 
 # activityAll ------------------------------------------------------------------
-activityAll <- activity %>%
-  mutate(table = "activityAll")
+t <- filter(t, table == "activity") %>%
+  mutate(table = "activityAll") %>%
+  bind_rows(t, .)
 
 
 # antDeps ------------------------------------------------------------------
-antDeps <- field_names %>%
+t <- field_names %>%
   filter(str_detect(table, "antdeps"),
          !column %in% c("projectID", "deviceID")) %>%
   mutate(table = "antDeps",
          keys = column %in% c("deployID", "port"),
          extra = list(c("CREATE INDEX IF NOT EXISTS antDeps_deployID on antDeps(deployID)",
-                        "CREATE INDEX IF NOT EXISTS antDeps_port on antDeps(port)")))
+                        "CREATE INDEX IF NOT EXISTS antDeps_port on antDeps(port)"))) %>%
+  bind_rows(t, .)
 
 # batches ------------------------------------------------------------------
 # "batches" table applies to batches_for_receiver and batches_for_tag
-batches <- field_names %>%
+t <- field_names %>%
   filter(str_detect(table, "batches_for_tag"),
          !column %in% c("version")) %>%
   mutate(table = "batches",
-         keys = column == "batchID")
-
-
+         keys = column == "batchID") %>%
+  bind_rows(t, .)
 
 
 # gps --------------------------------------------------------------------
-gps <- field_names %>%
+t <- field_names %>%
   filter(str_detect(table, "gps_for_tag"),
          !column %in% c("motusProjectID", "recvProjectID")) %>%
   mutate(table = "gps",
          keys = column == "gpsID",
          references = if_else(column == "batchID", "batches", ""),
          # Remove empty gps detections
-         extra = list(c("DELETE FROM gps where lat = 0 and lon = 0 and alt = 0")))
+         extra = list(c("DELETE FROM gps where lat = 0 and lon = 0 and alt = 0"))) %>%
+  bind_rows(t, .)
 
 # gpsAll --------------------------------------------------------------------
-gpsAll <- gps %>%
+t <- filter(t, table == "gps") %>%
   mutate(table = "gpsAll",
-         extra = str_replace(extra, "gps", "gpsAll"))
+         extra = purrr::map(extra, ~str_replace(., "gps", "gpsAll"))) %>%
+  bind_rows(t, .)
 
 
 # hits --------------------------------------------------------------------
 # "hits" table applies to hits_for_receiver and hits_for_tag_project
-hits <- field_names %>%
+t <- field_names %>%
   filter(str_detect(table, "hits_for_tag"),
          !column %in% c("projectID")) %>%
   mutate(table = "hits",
@@ -76,133 +81,146 @@ hits <- field_names %>%
          not_nulls = column %in% c("runID", "batchID", "ts", "sig"),
          references = case_when(column == "runID" ~ "runs",
                                 column == "batchID" ~ "batches"),
-         extra = list(c("CREATE INDEX IF NOT EXISTS hits_batchID_ts on hits(batchID, ts)")))
+         extra = list(c("CREATE INDEX IF NOT EXISTS hits_batchID_ts on hits(batchID, ts)"))) %>%
+  bind_rows(t, .)
 
 
 # nodeData --------------------------------------------------------------------
 # "nodeData" table applies to node_data_for_receiver and node_data_for_tag_project
-nodeData <- field_names %>%
+t <- field_names %>%
   filter(str_detect(table, "node_data_for_tag"),
          !column %in% c("projectID", "deviceID")) %>%
-  mutate(keys = column == "nodeDataID",
-         not_nulls = column %in% c("nodeDataID", "batchID", "ts", "nodeNum", "ant"))
+  mutate(table = "nodeData",
+         keys = column == "nodeDataID",
+         not_nulls = column %in% c("nodeDataID", "batchID", "ts", "nodeNum", "ant")) %>%
+  bind_rows(t, .)
 
 # nodeDeps --------------------------------------------------------------------
-nodeDeps <- field_names %>%
+t <- field_names %>%
   filter(str_detect(table, "nodedeps"),
          !column %in% c("projectID", "deviceID", "nodeNum")) %>%
   mutate(table = "nodeDeps",
          keys = column == "nodeDeployID",
-         not_nulls = column %in% c("deployID", "nodeDeployID", "tsStart", "tsEnd"))
+         not_nulls = column %in% c("deployID", "nodeDeployID", "tsStart")) %>%
+  bind_rows(t, .)
 
 # pulseCounts --------------------------------------------------------------------
-pulseCounts <- field_names %>%
+t <- field_names %>%
   filter(str_detect(table, "pulse")) %>%
   mutate(table = "pulseCounts",
          keys = column %in% c("batchID", "ant", "hourBin"),
-         not_nulls = column %in% c("batchID", "ant"))
+         not_nulls = column %in% c("batchID", "ant")) %>%
+  bind_rows(t, .)
 
 # recvDeps --------------------------------------------------------------------
-recvDeps <- field_names %>%
+t <- field_names %>%
   filter(str_detect(table, "recvdeps")) %>%
   add_row(column = "macAddress", type = "TEXT") %>%
   mutate(table = "recvDeps",
          keys = column == "deployID",
          extra = list(c("CREATE INDEX IF NOT EXISTS recvDeps_serno on recvDeps(serno)",
                         "CREATE INDEX IF NOT EXISTS recvDeps_deviceID on recvDeps(deviceID)",
-                        "CREATE INDEX IF NOT EXISTS recvDeps_projectID on recvDeps(projectID)")))
+                        "CREATE INDEX IF NOT EXISTS recvDeps_projectID on recvDeps(projectID)"))) %>%
+  bind_rows(t, .)
 
 # runs --------------------------------------------------------------------
 # "runs" table applies to runs_for_receiver and runs_for_tag_project
-runs <- field_names %>%
+t <- field_names %>%
   filter(str_detect(table, "runs_for_tag"),
          !column %in% c("projectID", "batchID")) %>%
   mutate(table = "runs",
          keys = column == "runID",
          not_nulls = column %in% c("batchIDbegin", "done", "motusTagID", "ant"),
-         defaults = if_else(column == "done", 0, as.numeric(NA)))
+         defaults = if_else(column == "done", 0, as.numeric(NA))) %>%
+  bind_rows(t, .)
 
 # species --------------------------------------------------------------------
-species <- field_names %>%
+t <- field_names %>%
   filter(str_detect(table, "tags_species")) %>%
   add_row(column = "sort", type = "INT") %>%
   mutate(table = "species",
          keys = column == "id",
-         not_nulls = column %in% c("id"))
+         not_nulls = column %in% c("id")) %>%
+  bind_rows(t, .)
 
 # tagAmbig --------------------------------------------------------------------
-tagAmbig <- field_names %>%
+t <- field_names %>%
   filter(str_detect(table, "tags_for_ambiguities"),
          !column %in% c("projectID", "batchID")) %>%
   add_row(column = "masterAmbigID", type = "INT") %>%
   mutate(table = "tagAmbig",
          keys = column == "ambigID",
-         not_nulls = column == "ambigID")
+         not_nulls = column == "ambigID") %>%
+  bind_rows(t, .)
 
 # tagDeps --------------------------------------------------------------------
-tagDeps <- field_names %>%
-  filter(str_detect(table, "tags_deps")) %>%
+t <- field_names %>%
+  filter(str_detect(table, "tags_deps"),
+         !column %in% c("attachment")) %>%
   add_row(column = "bandNumber", type = "TEXT") %>%
   add_row(column = "id", type = "INT") %>%
   add_row(column = "bi", type = "INT") %>%
   add_row(column = "fullID", type = "INT") %>%
+  add_row(column = "status", type = "TEXT") %>%
   mutate(table = "tagDeps",
          keys = column == "deployID",
          extra = list(c("CREATE INDEX IF NOT EXISTS tagDeps_projectID on tagDeps(projectID)",
-                        "CREATE INDEX IF NOT EXISTS tagDeps_deployID on tagDeps(deployID)")))
+                        "CREATE INDEX IF NOT EXISTS tagDeps_deployID on tagDeps(deployID)"))) %>%
+  bind_rows(t, .)
 
 # tagProps --------------------------------------------------------------------
-tagProps <- field_names %>%
+t <- field_names %>%
   filter(str_detect(table, "properties"),
          !column %in% c("projectID")) %>%
   mutate(table = "tagProps",
          keys = column == "propID",
          not_nulls = column %in% c("tagID", "deployID", "propName"),
-         extra = list(c("CREATE INDEX IF NOT EXISTS tagProps_deployID ON tagProps (deployID ASC)")))
+         extra = list(c("CREATE INDEX IF NOT EXISTS tagProps_deployID ON tagProps (deployID ASC)"))) %>%
+  bind_rows(t, .)
 
 
 # tags --------------------------------------------------------------------
-tags <- field_names %>%
+t <- field_names %>%
   filter(str_detect(table, "metadata_for_tags$")) %>%
   mutate(table = "tags",
          keys = column == "tagID",
-         extra = list(c("CREATE INDEX IF NOT EXISTS tags_projectID on tags(projectID)")))
-
-
+         extra = list(c("CREATE INDEX IF NOT EXISTS tags_projectID on tags(projectID)"))) %>%
+  bind_rows(t, .)
 
 
 # ** NOT FROM SCHEME ---------------------------------------------------------
 
-
-
 # admInfo --------------------------------------------------------------------
-admInfo <- tribble(~column,        ~type,
+t <- tribble(~column,        ~type,
                    "db_version",   "INTEGER",
                    "data_version", "TEXT") %>%
-  mutate(table = "admInfo")
+  mutate(table = "admInfo") %>%
+  bind_rows(t, .)
 
 # batchRuns --------------------------------------------------------------------
-batchRuns <- tribble(~column,   ~type,
+t <- tribble(~column,   ~type,
                      "batchID", "INTEGER",
                      "runID",   "INTEGER") %>%
   mutate(table = "batchRuns",
          not_nulls = TRUE,
          extra = list(c("CREATE INDEX batchRuns_batchID on batchRuns (batchID)",
-                        "CREATE INDEX batchRuns_runID on batchRuns (runID)")))
+                        "CREATE INDEX batchRuns_runID on batchRuns (runID)"))) %>%
+  bind_rows(t, .)
 
 
 # clarified ------------------------------------------------------------------
-clarified <- tribble(~column,   ~type,
+t <- tribble(~column,   ~type,
                      "ambigID", "INTEGER",
                      "tagID",   "INTEGER",
                      "tsStart", "REAL",
                      "tsEnd",   "REAL") %>%
   mutate(table = "clarified",
-         extra = list(c("CREATE INDEX IF NOT EXISTS clarified_ambigID_tsStart ON clarified(ambigID, tsStart)")))
+         extra = list(c("CREATE INDEX IF NOT EXISTS clarified_ambigID_tsStart ON clarified(ambigID, tsStart)"))) %>%
+  bind_rows(t, .)
 
 
 # filters ------------------------------------------------------------------
-filters <- dplyr::tribble(
+t <- tribble(
   ~column,        ~type,
   "filterID",     "INTEGER",   # locally unique filterID
   "userLogin",    "TEXT",      # motus login of the user who created the filter
@@ -216,21 +234,23 @@ filters <- dplyr::tribble(
                                    "lastModified"),
          extra = list(c("CREATE UNIQUE INDEX IF NOT EXISTS 
                         filters_filterName_motusProjID ON filters 
-                        (filterName ASC, motusProjID ASC)")))
+                        (filterName ASC, motusProjID ASC)"))) %>%
+  bind_rows(t, .)
 
 
 # meta --------------------------------------------------------------------
-meta <- dplyr::tribble(
+t <- tribble(
   ~column,    ~type,
   "key",      "CHAR",     # name of key for meta data
   "val",      "CHAR") %>% # character string giving meta data; might be in JSON format
   mutate(table = "meta", 
          keys = column == "key",
          not_nulls = column == "key",
-         uniques= column == "key")
+         uniques= column == "key") %>%
+  bind_rows(t, .)
 
 # projs -------------------------------------------------------------------
-projs <- dplyr::tribble(
+t <- tribble(
   ~column,             ~type,
   "id",                 "INTEGER",
   "name",               "TEXT",
@@ -239,14 +259,15 @@ projs <- dplyr::tribble(
   "sensorsPermissions", "INTEGER") %>%
   mutate(table = "projs", 
          keys = column == "id",
-         not_nulls = column == "id")
+         not_nulls = column == "id") %>%
+  bind_rows(t, .)
   
 
 
 
 # projAmbig --------------------------------------------------------------------
 
-projAmbig <- dplyr::tribble(
+t <- tribble(
   ~column,             ~type,
   "ambigProjectID",   "INTEGER", 
   "projectID1",       "INTEGER",
@@ -257,7 +278,8 @@ projAmbig <- dplyr::tribble(
   "projectID6",       "INTEGER") %>%
   mutate(table = "projAmbig",
          keys = column == "ambigProjectID",
-         not_nulls = column %in% c("ambigProjectID", "projectID1"))
+         not_nulls = column %in% c("ambigProjectID", "projectID1")) %>%
+  bind_rows(t, .)
   
 # projBatch --------------------------------------------------------------------
 #
@@ -267,58 +289,71 @@ projAmbig <- dplyr::tribble(
 # (negative) tagDepProjectID, which corresponds to a unique set of projects
 # which might own the tag detection.
 
-projBatch <- dplyr::tribble(
+t <- tribble(
   ~column,           ~type,
   "tagDepProjectID", "INTEGER",          # project ID
   "batchID",         "INTEGER",          # unique identifier for batch
   "maxHitID",        "INTEGER") %>%      # unique identifier for largest hit we have for this tagDepProjectID, batchID
   mutate(table = "projBatch",
          keys = column %in% c("tagDepProjectID", "batchID"),
-         not_nulls = TRUE)
+         not_nulls = TRUE) %>%
+  bind_rows(t, .)
 
 
 # recvs --------------------------------------------------------------------
-recvs <- recvDeps %>%
+t <- filter(t, table == "recvDeps") %>%
   filter(column %in% c("serno", "deviceID")) %>%
+  select(-extra) %>%
   mutate(table = "recvs",
          keys = column == "deviceID",
-         not_nulls = column == "deviceID")
+         not_nulls = column == "deviceID") %>%
+  bind_rows(t, .)
 
 
 # runsFilter --------------------------------------------------------------
-runsFilter <- dplyr::tribble(
+t <- tribble(
   ~column,       ~type,
   "filterID",    "INTEGER",            # locally unique filterID
   "runID",       "INTEGER",            # unique ID of the run record to which the filter applies
   "motusTagID",  "INTEGER",            # unique ID of the Motus tag. Should match the actual motusTagID, not the negative ambigID in the case of ambiguous runs.
   "probability", "REAL") %>%           # probability (normally between 0 and 1) attached to the run record
-  mutate(table = "runsFilter",
+  mutate(table = "runsFilters",
          keys = column %in% c("filterID", "runID", "motusTagID"),
          not_nulls = TRUE,
          extra = list("CREATE INDEX IF NOT EXISTS 
                        runsFilters_filterID_runID_motusTagID ON runsFilters 
-                       (filterID ASC, runID ASC, motusTagID ASC, probability ASC);"))
+                       (filterID ASC, runID ASC, motusTagID ASC, probability ASC);")) %>%
+  bind_rows(t, .)
 
 
 # ** COMBINE ---------------------------------------------------------------
-sql_tables <- bind_rows(activity, activityAll, antDeps, batches, gps, gpsAll, hits, nodeData, nodeDeps, 
-                    pulseCounts, recvDeps, runs, species, tagAmbig, tagDeps, 
-                    tagProps, tags, admInfo, batchRuns, clarified, filters, meta,
-                    projs, projAmbig, projBatch, recvs, runsFilter) %>%
+sql_tables <- t %>%
   as_tibble() %>%
   select(-ordinal_position, -is_nullable) %>%
-  mutate(across(c(-defaults, -references), tidyr::replace_na, FALSE),
+  group_by(table) %>%
+  mutate(keys = if_else(keys, 
+                        glue("PRIMARY KEY({glue_collapse(column[keys], sep = ',')})"), 
+                        ""),
+         keys = tidyr::replace_na(keys, "")) %>%
+  ungroup() %>%
+  mutate(across(c(-defaults, -references), tidyr::replace_na, FALSE), #most missing options get FALSE
+         # Columns with special words are quoted
+         column = if_else(column %in% c("group"), glue("'{column}'"), column),
          not_nulls = if_else(not_nulls, "NOT NULL", ""),
-         keys = if_else(keys, "PRIMARY KEY", ""),
          uniques = if_else(uniques, "UNIQUE", ""),
-         references = if_else(!is.na(references), glue("REFERENCES {references}"), ""),
-         defaults = if_else(!is.na(defaults), glue("DEFAULTS {defaults}"), ""),
-         sql = glue("{column} {type} {keys} {uniques} {defaults} {references}"),
-         sql = str_remove_all(sql, "[ ]{2,}"),
+         references = tidyr::replace_na(references, ""),
+         references = if_else(references != "", glue("REFERENCES {references}"), ""),
+         defaults = tidyr::replace_na(defaults, ""),
+         defaults = if_else(defaults != "", glue("DEFAULT {defaults}"), ""),
+         sql = glue("{column} {type} {not_nulls} {uniques} {defaults} {references}"),
+         sql = str_replace_all(sql, "[ ]{2,}", " "),
          extra_sql = purrr::map_chr(extra, 
                                     ~glue_collapse(.[[1]], sep = "; ")),
          extra_sql = if_else(extra_sql == FALSE, "", paste0("\n", extra_sql, ";"))) %>%
   group_by(table) %>%
-  summarize(sql = glue("CREATE table {table[1]} ({glue_collapse(sql, sep = \"\n\")});",
-                       "{extra_sql[1]}"), .groups = "drop")
+  summarize(sql = glue_collapse(sql, sep = ',\n'),
+            sql = if_else(any(keys != ""), glue("{sql},\n{keys[keys != ''][1]}"), sql),
+            sql = glue("CREATE TABLE IF NOT EXISTS {table[1]} ({sql});",
+                       "{extra_sql[1]}"), 
+            .groups = "drop")
 

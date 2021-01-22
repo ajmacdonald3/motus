@@ -6,15 +6,15 @@ sql_versions <- rbind(
   sql_versions,
   cbind(date = "2020-09-24",
         descr = "Add activityAll and gpsAll tables",
-        sql = paste0(makeTables(type = "activityAll"),
-                     makeTables(type = "gpsAll"))))
+        sql = paste0(makeTable(name = "activityAll"),
+                     makeTable(name = "gpsAll"))))
 
 sql_versions <- rbind(
   sql_versions,
   cbind(date = "2020-08-07",
         descr = "Rename nodeDataId to nodeDataID in nodeData",
         sql = paste0("ALTER TABLE nodeData RENAME TO nodeData2;",
-                     makeTables(type = "nodeData"),
+                     makeTable(name = "nodeData"),
                      "INSERT INTO nodeData SELECT * FROM nodeData2;",
                      "DROP TABLE nodeData2;")))
 
@@ -63,10 +63,10 @@ sql_versions <- rbind(
         sql = paste0("DROP VIEW IF EXISTS allambigs;",   # Remove Views so we can delete the table
                      "DROP VIEW IF EXISTS alltagsGPS;", 
                      "DROP VIEW IF EXISTS alltags;",
-                     makeTables(type = "tagAmbig", name = "tagAmbig2"), 
-                     "INSERT INTO tagAmbig2 SELECT * FROM tagAmbig;
-                      DROP TABLE tagAmbig;
-                      ALTER TABLE tagAmbig2 RENAME TO tagAmbig;"))
+                     "ALTER TABLE tagAmbig RENAME TO tagAmbig2;",
+                     makeTable(name = "tagAmbig"), 
+                     "INSERT INTO tagAmbig SELECT * FROM tagAmbig2;
+                      DROP TABLE tagAmbig2;"))
 )
 
 sql_versions <- rbind(

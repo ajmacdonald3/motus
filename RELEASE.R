@@ -51,7 +51,7 @@ remotes::install_deps()
 
 ## Update internal data files
 set_testing(set = FALSE) # Make sure to download full sets
-source("data-raw/updatesql.R")
+source("data-raw/internal_data.R")
 source("data-raw/sample_data.R")
 
 
