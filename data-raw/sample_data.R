@@ -19,7 +19,7 @@ if(have_auth()) {
   # Update project 4
   #file.remove("./inst/extdata/project-4.motus")
   #tagme(4, new = TRUE, update = TRUE, dir = "./inst/extdata/")
-  tagme(4, new = FALSE, update = TRUE, dir = "./inst/extdata/")
+  #tagme(4, new = FALSE, update = TRUE, dir = "./inst/extdata/")
   
   # Create small sample for GPS tests
   file.copy("./inst/extdata/project-4.motus", "./inst/extdata/gps_sample.motus", overwrite = TRUE)
@@ -36,10 +36,10 @@ if(have_auth()) {
     dplyr::filter(ts2 >= !!xlim[1], ts2 <= !!xlim[2]) %>%
     dplyr::collect()
 
-  library(ggplot2)
-  ggplot(data = gps, aes(x = ts2)) +
-    geom_histogram(fill = "red", alpha = 0.3, colour = "black", binwidth = 1) +
-    geom_histogram(data = hits, fill = "blue", alpha = 0.3, colour = "black", binwidth = 1) #+
+  # library(ggplot2)
+  # ggplot(data = gps, aes(x = ts2)) +
+  #   geom_histogram(fill = "red", alpha = 0.3, colour = "black", binwidth = 1) +
+  #   geom_histogram(data = hits, fill = "blue", alpha = 0.3, colour = "black", binwidth = 1) #+
     #coord_cartesian(ylim = c(0, 20))
 
   # xlim *3600
