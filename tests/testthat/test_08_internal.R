@@ -44,22 +44,22 @@ test_that("hitsByBatchProject doesn't fail on extra columns", {
 
 test_that("hitsByBatchReceiver doesn't fail on extra columns", {
   skip_if_no_auth()
+  unlink("SG-3115BBBK0782.motus")
   f <- system.file("extdata", "SG-3115BBBK0782.motus", package = "motus")
   skip_if_no_file(f)
-  
   file.copy(f, ".")
+  
   tags <- tagme("SG-3115BBBK0782", new = FALSE, update = FALSE)
+  b <- unlist(DBI::dbGetQuery(tags$con, "SELECT batchID FROM hits LIMIT 1"))
   DBI::dbExecute(tags$con, "DELETE FROM hits")
   tags_sql <- safeSQL(tags)
   
-  expect_silent(h0 <- srvHitsForReceiver(batchID = 417054, 
-                                         hitID = 0))
-  expect_message(hitsForBatchReceiver(sql = tags_sql, 
-                                      batchID = 417054,
-                                      batchMsg = "temp"))
-  expect_true(dplyr::all_equal(h0, dplyr::tbl(tags$con, "hits") %>% 
-                                 dplyr::collect() %>% 
-                                 as.data.frame(), 
+  expect_silent(h0 <- srvHitsForReceiver(batchID = b, hitID = 0))
+  expect_true(nrow(h0) > 0)
+  expect_message(hitsForBatchReceiver(sql = tags_sql, batchID = b, batchMsg = "temp"))
+  expect_true(dplyr::all_equal(h0, 
+                               dplyr::tbl(tags$con, "hits") %>% 
+                                 dplyr::collect(), 
                                convert = TRUE))
   
   # Expect extra columns to NOT result in an error
