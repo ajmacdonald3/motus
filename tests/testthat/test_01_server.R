@@ -48,7 +48,6 @@ test_that("Receivers download - Receivers", {
 })
 
 test_that("tagme with countOnly (tellme) - Projects", {
-  skip("Temp")
   skip_on_cran()
   
   sample_auth()
@@ -66,7 +65,6 @@ test_that("tagme with countOnly (tellme) - Projects", {
 })
 
 test_that("tagme with countOnly (tellme) - Receivers", {
-  skip("Temp")
   skip_on_cran()
   skip_if_no_auth()
   
