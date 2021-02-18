@@ -77,8 +77,10 @@ test_that("Reciever data returned as expected", {
   
   orig <- getOption("motus.test.max")
   options(motus.test.max = 60)
+  unlink("SG-3115BBBK0782.motus")
   
-  expect_message(tags <- tagme(projRecv = "SG-3115BBBK0782", new = TRUE, update = TRUE)) %>%
+  expect_message(tags <- tagme(projRecv = "SG-3115BBBK0782", 
+                               new = TRUE, update = TRUE)) %>%
     expect_is("src_SQLiteConnection")
   
   # Tables exists
@@ -105,16 +107,16 @@ test_that("Reciever data returned as expected", {
   #tagDeps
   expect_silent(a <- dplyr::tbl(tags$con, "tagDeps") %>% dplyr::collect())
   expect_true(all(c("test", "age", "sex") %in% names(a)))
-  expect_is(a$age, "character")
-  expect_is(a$sex, "character")
-  expect_is(a$test, "integer")
+  expect_type(a$age, "character")
+  expect_type(a$sex, "character")
+  expect_type(a$test, "double")
   expect_true("tagDeployTest" %in% DBI::dbListFields(tags$con, "alltags"))
   expect_true("tagDeployTest" %in% DBI::dbListFields(tags$con, "alltagsGPS"))
   
   #antDeps
   expect_silent(a <- dplyr::tbl(tags$con, "antDeps") %>% dplyr::collect())
   expect_true(all(c("antFreq") %in% names(a)))
-  expect_is(a$antFreq, "numeric")
+  expect_type(a$antFreq, "double")
   expect_true(any(a$antFreq > 1))
   
   options(motus.test.max = orig)

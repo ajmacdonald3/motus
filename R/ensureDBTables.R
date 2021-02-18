@@ -39,7 +39,7 @@ ensureDBTables = function(src, projRecv, deviceID, quiet = FALSE) {
              "nodeData", "nodeDeps", "projAmbig", "projs", "pulseCounts",
              "recvDeps", "runs", "runsFilters", "species",
              "tagAmbig", "tagDeps", "tagProps", "tags")) {
-    message(t)
+
     if(!t %in% tables && !(t == "pulseCounts" && !isRecvDB)) {
       lapply(makeTable(t), dbExecuteAll, conn = con)
     }
