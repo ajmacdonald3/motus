@@ -31,7 +31,7 @@ test_that("filterByActivity filters as expected", {
     dplyr::collect()
   
   a <- a %>%
-    dplyr::mutate(motusFilter = as.integer(probability)) %>%
+    dplyr::mutate(motusFilter = as.numeric(probability)) %>%
     dplyr::select(runID, batchID, runLen, motusFilter) %>%
     dplyr::distinct() %>%
     dplyr::collect()

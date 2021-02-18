@@ -4,7 +4,7 @@
 \alias{gpsAll}
 \title{Add/update all GPS points}
 \usage{
-gpsAll(src, resume = FALSE)
+gpsAll(src, resume = TRUE)
 }
 \arguments{
 \item{src}{src_sqlite object representing the database}
@@ -36,11 +36,16 @@ records.
 sql.motus <- tagme(176, update = FALSE, 
                    dir = system.file("extdata", package = "motus"))
   
-# Access 'activity' table
+# Get all GPS points
+sql.motus <- gpsAll(sql.motus)
+
+# Access 'gpsAll' table
 library(dplyr)
-a <- tbl(sql.motus, "activity")
+g <- tbl(sql.motus, "gpsAll")
   
-# If interrupted and you want to resume
-\dontrun{my_tags <- activity(sql.motus, resume = TRUE)}
+# gpsAll resumes a previous download by default
+# If you want to delete this original data and do a fresh download, 
+# use resume = FALSE
+\dontrun{sql.motus <- gpsAll(sql.motus, resume = FALSE)}
 
 }

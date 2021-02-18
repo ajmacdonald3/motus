@@ -24,7 +24,7 @@
 #' 
 #' # Access 'activityAll' table
 #' library(dplyr)
-#' a <- tbl(sql.motus, "activity")
+#' a <- tbl(sql.motus, "activityAll")
 #'   
 #' # If interrupted and you want to resume
 #' \dontrun{sql.motus <- activityAll(sql.motus, resume = TRUE)}

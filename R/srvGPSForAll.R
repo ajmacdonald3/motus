@@ -19,7 +19,8 @@
 
 srvGPSForAll <- function(gpsID = 0, verbose = FALSE) {
   x <- srvQuery(API = motus_vars$API_GPS_FOR_RECIEVER_ALL,
-                params = list(gpsID = 0),
+                params = list(gpsID = gpsID),
                 verbose = verbose)
-  return (structure(x, class = "data.frame", row.names = seq(along = x[[1]])))
+  
+  as.data.frame(x)
 }

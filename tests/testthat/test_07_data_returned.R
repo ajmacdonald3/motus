@@ -123,7 +123,23 @@ test_that("Reciever data returned as expected", {
 })
 
 test_that("activityAll and gpsAll return for tag data", {
+  skip_on_cran()
+  skip_if_no_auth()
   
+  unlink("SG-3115BBBK0782.motus")
+  expect_message(tags <- tagme(projRecv = "SG-3115BBBK0782", 
+                               new = TRUE, update = TRUE)) %>%
+    expect_is("src_SQLiteConnection")
   
+  # Tables exists
+  expect_true("activityAll" %in% DBI::dbListTables(tags$con))
+  expect_true("gpsAll" %in% DBI::dbListTables(tags$con))
   
+  # No problem downloading
+  expect_message(a <- activityAll(tags))
+  expect_message(g <- gpsAll(tags))
+  
+  # Expect data downloaded
+  expect_gt(dplyr::tbl(a, "activityAll") %>% dplyr::collect() %>% nrow(), 0)
+  expect_gt(dplyr::tbl(a, "gpsAll") %>% dplyr::collect() %>% nrow(), 0)
 })

@@ -26,16 +26,21 @@
 #' sql.motus <- tagme(176, update = FALSE, 
 #'                    dir = system.file("extdata", package = "motus"))
 #'   
-#' # Access 'activity' table
+#' # Get all GPS points
+#' sql.motus <- gpsAll(sql.motus)
+#' 
+#' # Access 'gpsAll' table
 #' library(dplyr)
-#' a <- tbl(sql.motus, "activity")
+#' g <- tbl(sql.motus, "gpsAll")
 #'   
-#' # If interrupted and you want to resume
-#' \dontrun{my_tags <- activity(sql.motus, resume = TRUE)}
+#' # gpsAll resumes a previous download by default
+#' # If you want to delete this original data and do a fresh download, 
+#' # use resume = FALSE
+#' \dontrun{sql.motus <- gpsAll(sql.motus, resume = FALSE)}
 #'
 #' @export
 
-gpsAll <- function(src, resume = FALSE) {
+gpsAll <- function(src, resume = TRUE) {
   
   pageInitial <- function(returnID, projectID) srvGPSForAll(gpsID = returnID)
   
@@ -43,7 +48,7 @@ gpsAll <- function(src, resume = FALSE) {
     srvGPSForAll(gpsID = returnID) 
   }
   
-  pageDataByReturn(src, table = "gpsAll", resume = resume,
-                   pageInitial, pageForward)
+  pageDataByReturn(src, table = "gpsAll", resume = resume, returnIDtype = "gpsID",
+                   pageInitial = pageInitial, pageForward = pageForward)
   
 }
