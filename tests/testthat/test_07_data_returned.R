@@ -122,7 +122,33 @@ test_that("Reciever data returned as expected", {
   options(motus.test.max = orig)
 })
 
+
+# activityAll / gpsAll ----------------------------------------------------
 test_that("activityAll and gpsAll return for tag data", {
+  skip_on_cran()
+  skip_if_no_auth()
+  
+  unlink("project-4.motus")
+  expect_message(tags <- tagme(projRecv = 4, new = TRUE, update = TRUE)) %>%
+    expect_is("src_SQLiteConnection")
+  
+  # Tables exists
+  expect_true("activityAll" %in% DBI::dbListTables(tags$con))
+  expect_true("gpsAll" %in% DBI::dbListTables(tags$con))
+  
+  # No problem downloading
+  orig <- getOption("motus.test.max")
+  options(motus.test.max = 3)
+  expect_message(a <- activityAll(tags))
+  expect_message(g <- gpsAll(tags))
+  options(motus.test.max = orig)
+  
+  # Expect data downloaded
+  expect_gt(dplyr::tbl(a, "activityAll") %>% dplyr::collect() %>% nrow(), 0)
+  expect_gt(dplyr::tbl(a, "gpsAll") %>% dplyr::collect() %>% nrow(), 0)
+})
+
+test_that("activityAll and gpsAll return for receiver data", {
   skip_on_cran()
   skip_if_no_auth()
   
@@ -136,10 +162,13 @@ test_that("activityAll and gpsAll return for tag data", {
   expect_true("gpsAll" %in% DBI::dbListTables(tags$con))
   
   # No problem downloading
-  expect_message(a <- activityAll(tags))
-  expect_message(g <- gpsAll(tags))
+  orig <- getOption("motus.test.max")
+  options(motus.test.max = 3)
+  expect_message(activityAll(tags))
+  expect_message(gpsAll(tags))
+  options(motus.test.max = orig)
   
   # Expect data downloaded
-  expect_gt(dplyr::tbl(a, "activityAll") %>% dplyr::collect() %>% nrow(), 0)
-  expect_gt(dplyr::tbl(a, "gpsAll") %>% dplyr::collect() %>% nrow(), 0)
+  expect_gt(dplyr::tbl(tags, "activityAll") %>% dplyr::collect() %>% nrow(), 0)
+  expect_gt(dplyr::tbl(tags, "gpsAll") %>% dplyr::collect() %>% nrow(), 0)
 })

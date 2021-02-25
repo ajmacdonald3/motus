@@ -2,8 +2,8 @@
 
 sample_auth()
 
-file.remove("./inst/extdata/project-176.motus")
-tags <- tagme(projRecv = 176, new = TRUE, update = TRUE, "./inst/extdata/")
+#file.remove("./inst/extdata/project-176.motus")
+tags <- tagme(projRecv = 176, new = FALSE, update = TRUE, "./inst/extdata/")
 shorebirds <- dplyr::tbl(tags, "alltagsGPS") %>%
   dplyr::collect()
 
@@ -13,8 +13,8 @@ usethis::use_data(shorebirds, overwrite = TRUE)
 
 if(have_auth()) {
   local_auth()
-  file.remove("./inst/extdata/SG-3115BBBK0782.motus")
-  tagme("SG-3115BBBK0782", new = TRUE, update = TRUE, dir = "./inst/extdata/")
+  #file.remove("./inst/extdata/SG-3115BBBK0782.motus")
+  tagme("SG-3115BBBK0782", new = FALSE, update = TRUE, dir = "./inst/extdata/")
   
   # Update project 4
   #file.remove("./inst/extdata/project-4.motus")

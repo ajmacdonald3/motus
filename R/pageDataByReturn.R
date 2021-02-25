@@ -30,11 +30,11 @@ pageDataByReturn <- function(src, table, resume = FALSE, returnIDtype = "batchID
   # Announce
   message(msg)
   
-  added <- 0
-  rounds <- 0
-  
   # Get batch
   b <- pageInitial(returnID, projectID)
+  
+  added <- nrow(b)
+  rounds <- 1
   
   # Progress messages
   message(sprintf("%s %8d: ", returnIDtype, returnID), sprintf("got %6d %s records", nrow(b), table))

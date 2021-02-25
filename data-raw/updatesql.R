@@ -2,9 +2,10 @@
 
 sql_versions <- dplyr::tibble()
 
+# sandbox item, update date when merged
 sql_versions <- rbind(
   sql_versions,
-  cbind(date = "2020-09-24",
+  cbind(date = "2021-02-23",
         descr = "Add activityAll and gpsAll tables",
         sql = paste0(makeTable(name = "activityAll"),
                      makeTable(name = "gpsAll"))))
