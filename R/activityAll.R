@@ -20,7 +20,7 @@
 #'                    dir = system.file("extdata", package = "motus"))
 #'   
 #' # Get all activity
-#' sql.motus <- activityAll(sql.motus)
+#' \dontrun{sql.motus <- activityAll(sql.motus)}
 #' 
 #' # Access 'activityAll' table
 #' library(dplyr)

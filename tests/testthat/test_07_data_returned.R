@@ -16,7 +16,7 @@ test_that("Tag data returned as expected", {
   skip_if_no_auth()
   
   orig <- getOption("motus.test.max")
-  options(motus.test.max = 60)
+  options(motus.test.max = 60) # will be at least 200mb?
   
   expect_message(tags <- tagme(projRecv = 207, new = TRUE, update = TRUE)) %>%
     expect_is("src_SQLiteConnection")

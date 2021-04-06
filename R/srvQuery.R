@@ -53,6 +53,7 @@ srvQuery <- function (API, params = NULL, JSON = FALSE,
         query <- c(query, params)
 
         json <- jsonlite::toJSON(query, auto_unbox = TRUE, null = "null")
+        if(json == "[]") json <- "NULL"
         
         if(verbose) message(url, "\n", json)
         

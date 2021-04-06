@@ -26,7 +26,8 @@ test_that("filterByActivity filters as expected", {
   
   # Matches motusFilter results
   runs <- dplyr::tbl(shorebirds_sql, "runs") %>%
-    dplyr::select(runID, batchID = batchIDbegin, runLen = len, motusFilter) %>%
+    dplyr::select(runID, batchID = batchIDbegin, 
+                  runLen = len, motusFilter) %>%
     dplyr::distinct() %>%
     dplyr::collect()
   

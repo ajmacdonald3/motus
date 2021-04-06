@@ -1,5 +1,7 @@
 context("Test Server Access")
 
+
+# tagme() errors appropriately --------------------------------------------
 test_that("tagme() errors appropriately", {
   skip_on_cran()
   skip_on_appveyor()
@@ -23,6 +25,8 @@ test_that("tagme() errors appropriately", {
   unlink("CTT-5031194D3168.motus")
 })
 
+
+# Projects downloads ---------------------------------------
 test_that("tagme() downloads data - Projects", {
   skip_on_cran()
   skip_on_appveyor()
@@ -36,7 +40,9 @@ test_that("tagme() downloads data - Projects", {
 
 })
 
-test_that("Receivers download - Receivers", {
+
+# Receivers download ------------------------------------------------------
+test_that("tagme() downloads data - Receivers", {
   skip_on_cran()
   skip_on_appveyor()
   skip_if_no_auth()
@@ -47,6 +53,8 @@ test_that("Receivers download - Receivers", {
   unlink("SG-3115BBBK1127.motus")
 })
 
+
+# Projects countOnly = TRUE ---------------------------------------------------
 test_that("tagme with countOnly (tellme) - Projects", {
   skip_on_cran()
   
@@ -64,6 +72,7 @@ test_that("tagme with countOnly (tellme) - Projects", {
   unlink("project-176.motus")
 })
 
+# Receivers countOnly = TRUE ---------------------------------------------------
 test_that("tagme with countOnly (tellme) - Receivers", {
   skip_on_cran()
   skip_if_no_auth()
@@ -74,6 +83,8 @@ test_that("tagme with countOnly (tellme) - Receivers", {
   unlink("SG-3115BBBK1127.motus")
 })
 
+
+# Timeouts ----------------------------------------------------------------
 test_that("srvQuery handles time out graciously", {
   
   sample_auth()
@@ -87,6 +98,8 @@ test_that("srvQuery handles time out graciously", {
     "The server did not respond within 0.01s. Trying again...")
 })
 
+
+# srvAuth errors ----------------------------------------------------------
 test_that("srvAuth handles errors informatively", {
   motusLogout()
   sessionVariable(name = "userLogin", val = "motus.samp")
