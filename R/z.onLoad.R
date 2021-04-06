@@ -142,10 +142,11 @@
 
     with(motus_vars,
     {
-        dataVersion = 0L  ## Current dataVersion returned by server
-        projects = 0L     ## vector of projectIDs to which user has access
+        dataVersion = 0L       ## Current dataVersion returned by server
+        currentPkgVersion = "" ## Current package Version accepted/required by server
+        projects = 0L          ## vector of projectIDs to which user has access
         receivers = 0L
-        dbDir = getwd()   ## folder where tag and receiver databases are stored
+        dbDir = getwd()        ## folder where tag and receiver databases are stored
     })
     
     # CRAN Note avoidance

@@ -107,3 +107,25 @@ test_that("srvAuth handles errors informatively", {
   
   expect_error(srvAuth(), "Authentication failed")
 })
+
+
+# srvAuth package version --------------------------------------------------
+
+test_that("srvAuth errors/warns/passes on package version", {
+  sample_auth()
+  expect_silent(srvAuth())
+  expect_true(!is.null(motus_vars$currentPkgVersion))
+    
+  v <- package_version(motus_vars$currentPkgVersion)
+  v <- c(v, v, v)
+  v[[c(1,1)]] <- as.numeric(v[[c(1,1)]]) - 1
+  v[[c(3,1)]] <- as.numeric(v[[c(3,1)]]) + 1
+  v <- as.character(v)
+  
+  with_mock("motus:::pkg_version" = mockery::mock(v[1]), 
+            expect_warning(srvAuth()))
+  with_mock("motus:::pkg_version" = mockery::mock(v[2]), 
+            expect_silent(srvAuth()))
+  with_mock("motus:::pkg_version" = mockery::mock(v[3]), 
+            expect_silent(srvAuth()))
+})
