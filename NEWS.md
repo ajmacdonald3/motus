@@ -1,3 +1,11 @@
+# motus SANDBOX
+### New features
+* New `allruns` and `allrunsGPS` views for quicker first passes of the data with 
+large datasets
+* New field/column `attachment` in `tagDeps` table
+* `gpsAll()` and `activityAll()` functions allow downloading complete records
+  of GPS points and Activity
+
 # motus 4.0.4
 ### Bug fixes
 * fixed bug resulting in occasional unending download loop of GPS fixes for receivers

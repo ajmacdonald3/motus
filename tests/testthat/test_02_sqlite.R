@@ -1,17 +1,17 @@
 context("sql tables")
 
 setup({
-  unlink("project-176.motus")
-  unlink("temp.motus")
+  unlink(list.files(pattern = "*.motus"))
   unlink(list.files(pattern = "project-176_custom_views"))
   file.copy(system.file("extdata", "project-176.motus", package = "motus"), ".")
 })
 
 teardown({
-  unlink("project-176.motus")
-  unlink("temp.motus")
+  unlink(list.files(pattern = "*.motus"))
 })
 
+
+# ensureDBTables creates database -----------------------------------------
 test_that("ensureDBTables() creates database", {
   expect_silent(temp <- dbplyr::src_dbi(DBI::dbConnect(RSQLite::SQLite(), "temp.motus")))
   expect_length(DBI::dbListTables(temp$con), 0)
@@ -19,7 +19,7 @@ test_that("ensureDBTables() creates database", {
   expect_message(ensureDBTables(temp, 176, quiet = FALSE))
   expect_silent(ensureDBTables(temp, 176, quiet = TRUE))
   expect_silent(temp <- dbplyr::src_dbi(DBI::dbConnect(RSQLite::SQLite(), "temp.motus")))
-  expect_length(t <- DBI::dbListTables(temp$con), 29)
+  expect_length(t <- DBI::dbListTables(temp$con), 31)
   
   # Expect columns in the tables
   for(i in t) expect_gte(ncol(dplyr::tbl(temp$con, !!i)), 2)
@@ -54,6 +54,60 @@ test_that("ensureDBTables() creates database", {
 
 })
 
+
+# views created correctly -------------------------------------------------
+test_that("Views created correctly", {
+  unlink("project-176-backup.motus")
+  file.copy("project-176.motus", "project-176-backup.motus")
+  tags <- tagme(176, update = FALSE, new = FALSE)
+  
+  views <- c("allambigs", "alltags", "alltagsGPS", "allruns", "allrunsGPS")
+  
+  # Remove existing views
+  for(v in views) DBI::dbExecute(tags$con, glue::glue("DROP VIEW IF EXISTS {v}"))
+  
+  # Add views
+  tags <- ensureDBTables(tags, projRecv = 176)
+  
+  # Check that views present
+  expect_true(all(views %in% DBI::dbListTables(tags$con)))
+  
+  # Check that data in views correct
+  allruns <- dplyr::tbl(tags$con, "allruns")
+  allrunsGPS <- dplyr::tbl(tags$con, "allrunsGPS")
+  alltags <- dplyr::tbl(tags$con, "alltags")
+  alltagsGPS <- dplyr::tbl(tags$con, "alltagsGPS")
+  
+  # More fields in GPS views
+  expect_gt(ncol(allrunsGPS), ncol(allruns))
+  expect_gt(ncol(alltagsGPS), ncol(alltags))
+  
+  # No hits in runs views
+  expect_false("hitID" %in% dplyr::tbl_vars(allruns))
+  expect_false("hitID" %in% dplyr::tbl_vars(allrunsGPS))
+  
+  # Hits in tags views
+  expect_true("hitID" %in% dplyr::tbl_vars(alltags))
+  expect_true("hitID" %in% dplyr::tbl_vars(alltagsGPS))
+  
+  # More rows in tags than runs view
+  expect_gt(nrow(at <- alltags %>% dplyr::collect()),
+            nrow(ar <- allruns %>% dplyr::collect()))
+  expect_gt(nrow(atGPS <- alltagsGPS %>% dplyr::collect()),
+            nrow(arGPS <- allrunsGPS %>% dplyr::collect()))
+  
+  # Expect same batches and runIDs
+  expect_equal(unique(at$batchID), unique(ar$batchID))
+  expect_equal(unique(at$runID), unique(ar$runID))
+  expect_equal(unique(atGPS$batchID), unique(arGPS$batchID))
+  expect_equal(unique(atGPS$runID), unique(arGPS$runID))
+  
+  unlink("project-176.motus")
+  file.rename("project-176-backup.motus", "project-176.motus")
+})
+
+
+# new tables have character ant and port ----------------------------------
 test_that("new tables have character ant and port", {
   tags <- DBI::dbConnect(RSQLite::SQLite(), "project-176.motus")
   expect_is(dplyr::tbl(tags, "runs") %>% 
@@ -78,6 +132,8 @@ test_that("new tables have character ant and port", {
   
 })
 
+
+# missing tables recreated ------------------------------------------------
 test_that("Missing tables recreated silently", {
   sample_auth()
   tags <- tagme(176, new = FALSE, update = FALSE)
@@ -93,7 +149,7 @@ test_that("Missing tables recreated silently", {
   
   for(i in t) {
     # Remove table/view
-    if(!i %in% c("alltags", "allambigs", "alltagsGPS")) {
+    if(!i %in% c("alltags", "allambigs", "alltagsGPS", "allruns", "allrunsGPS")) {
       expect_silent(DBI::dbRemoveTable(tags$con, !!i))
       expect_false(DBI::dbExistsTable(tags$con, !!i))
     } else {
@@ -108,6 +164,7 @@ test_that("Missing tables recreated silently", {
 })
 
 
+# check for custom views before updating ----------------------------------
 test_that("check for custom views before update", {
   # Get clean database
   sample_auth()

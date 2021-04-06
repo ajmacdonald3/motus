@@ -155,8 +155,7 @@ t <- field_names %>%
 
 # tagDeps --------------------------------------------------------------------
 t <- field_names %>%
-  filter(str_detect(table, "tags_deps"),
-         !column %in% c("attachment")) %>%
+  filter(str_detect(table, "tags_deps")) %>%
   add_row(column = "bandNumber", type = "TEXT") %>%
   add_row(column = "id", type = "INT") %>%
   add_row(column = "bi", type = "INT") %>%
@@ -327,7 +326,7 @@ t <- tribble(
 
 
 # ** COMBINE ---------------------------------------------------------------
-sql_tables <- t %>%
+sql_fields <- t %>%
   as_tibble() %>%
   select(-ordinal_position, -is_nullable) %>%
   group_by(table) %>%
@@ -349,7 +348,9 @@ sql_tables <- t %>%
          sql = str_replace_all(sql, "[ ]{2,}", " "),
          extra_sql = purrr::map_chr(extra, 
                                     ~glue_collapse(.[[1]], sep = "; ")),
-         extra_sql = if_else(extra_sql == FALSE, "", paste0("\n", extra_sql, ";"))) %>%
+         extra_sql = if_else(extra_sql == FALSE, "", paste0("\n", extra_sql, ";")))
+
+sql_tables <- sql_fields %>%
   group_by(table) %>%
   summarize(sql = glue_collapse(sql, sep = ',\n'),
             sql = if_else(any(keys != ""), glue("{sql},\n{keys[keys != ''][1]}"), sql),
@@ -357,3 +358,4 @@ sql_tables <- t %>%
                        "{extra_sql[1]}"), 
             .groups = "drop")
 
+sql_fields <- select(sql_fields, table, column, sql, extra_sql)

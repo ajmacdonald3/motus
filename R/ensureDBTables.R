@@ -52,15 +52,17 @@ ensureDBTables = function(src, projRecv, deviceID, quiet = FALSE) {
   
   
   updateMotusDb(src, quiet = quiet)
-  rv <- makeAllambigsView(src)
-  rv <- makeAlltagsView(src)
-  rv <- makeAlltagsGPSView(src)
-  rv
+  makeAllambigsView(src)
+  makeAlltagsView(src)
+  makeAlltagsGPSView(src)
+  makeAllrunsView(src)
+  makeAllrunsGPSView(src)
+  src
 }
 
 makeTable <- function(name) {
   dplyr::filter(sql_tables, .data$table == name) %>%
-    dplyr::pull(sql) %>%
+    dplyr::pull(.data$sql) %>%
     unlist()
 }
 
@@ -136,9 +138,12 @@ makeRecvs <- function(con) {
 }
 
 dbExecuteAll <- function(conn, statement) {
-  stringr::str_remove(statement, ";*( )*$") %>%
-    stringr::str_split(";") %>%
-    unlist() %>%
-    purrr::map(~ DBI::dbExecute(conn, .))
+  if(length(statement) == 1) {
+    statement <- stringr::str_remove(statement, ";*( )*$") %>%
+      stringr::str_split(";") %>%
+      unlist()
+  } 
+
+  purrr::map(statement, ~ DBI::dbExecute(conn, .))
 }
 
