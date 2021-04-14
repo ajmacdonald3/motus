@@ -40,10 +40,10 @@ set_testing <- function(set = TRUE) {
 #' available.
 #' 
 #' The credentials for a personal user account (`motus_userLogin` and
-#' `motus_userPassword`) should be stored in the users .Renviron file (generally
-#' found in the users Home, e.g., on linux /home/user/ which is loaded on R
-#' startup. If the credentials are not found, they are applied and TRUE is
-#' returned. Otherwise FALSE is returned.
+#' `motus_userPassword`) should be stored in the user's .Renviron file
+#' (generally found in the users Home, e.g., on linux /home/user/ which is
+#' loaded on R startup. If the credentials are not found, they are applied and
+#' TRUE is returned. Otherwise FALSE is returned.
 #' 
 #' @noRd
 
@@ -84,6 +84,11 @@ get_projRecv <- function(src) {
   projRecv
 }
 
+
+
+updatePkgVersion <- function(version) {
+  srvUpdatePkgVersion(version)
+}
 
 #' Return accessible projects and receivers
 #'

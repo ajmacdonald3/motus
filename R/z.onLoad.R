@@ -62,6 +62,9 @@
         # List of tables and field names for database
         API_SCHEMA = "schema"
         
+        # Update motus R package version on the server
+        API_UPDATE_PKG_VERSION = "update_pkg_version"
+        
         ## API entry points for the data server (these are relative to the data server URL)
 
         API_DATA_AUTHENTICATE = "custom/authenticate_user"
