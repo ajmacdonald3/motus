@@ -6,6 +6,17 @@ large datasets
 * `gpsAll()` and `activityAll()` functions allow downloading complete records
   of GPS points and Activity
 
+# motus 4.0.6
+### Bug fixes
+* fixed bug resulting in missing metadata tables, and permission errors resulting
+from JSON formatting
+* fixed bug where `forceMeta` didn't force metadata download for previously downloaded tags
+* fixed warnings produced by `plotRouteMap()` on old versions of R
+
+# motus 4.0.5
+### Bug fixes
+* removed not null constraint on tsEnd in nodeDeps
+
 # motus 4.0.4
 ### Bug fixes
 * fixed bug resulting in occasional unending download loop of GPS fixes for receivers

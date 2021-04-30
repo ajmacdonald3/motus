@@ -3,6 +3,7 @@
 CTT
 Codecov
 Detections
+JSON
 Lotek
 MFGID
 Metaprogramming
@@ -61,6 +62,10 @@ mins
 motusClient
 motusTagID
 nodeData
+<<<<<<< HEAD
+=======
+nodeDeps
+>>>>>>> master
 num
 numBatches
 numBytes

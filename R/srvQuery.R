@@ -49,12 +49,12 @@ srvQuery <- function (API, params = NULL, JSON = FALSE,
         } else {
             query <- list()
         }
-      
+
         query <- c(query, params)
 
         json <- jsonlite::toJSON(query, auto_unbox = TRUE, null = "null")
         if(json == "[]") json <- "NULL"
-        
+
         if(verbose) message(url, "\n", json)
         
         api_query <- function(url, json, ua, timeout) {
