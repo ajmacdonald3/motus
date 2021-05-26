@@ -148,6 +148,7 @@ makeAllrunsGPSView <- function(db, name = "allrunsGPS") {
              AND t11b.ts >= t2.tsBegin
          )")
   
+  DBI::dbExecute(db$con, paste0("DROP VIEW IF EXISTS ", name))
   DBI::dbExecute(db$con, query)
   dplyr::tbl(db, name)
 }
