@@ -29,13 +29,15 @@ test_that("filterByActivity filters as expected", {
     dplyr::select(runID, batchID = batchIDbegin, 
                   runLen = len, motusFilter) %>%
     dplyr::distinct() %>%
-    dplyr::collect()
+    dplyr::collect() %>%
+    dplyr::filter(runID != 2358172)  #Extra filtering applied
   
   a <- a %>%
     dplyr::mutate(motusFilter = as.numeric(probability)) %>%
     dplyr::select(runID, batchID, runLen, motusFilter) %>%
     dplyr::distinct() %>%
-    dplyr::collect()
+    dplyr::collect() %>%
+    dplyr::filter(runID != 2358172) #Extra filtering applied
   
   expect_true(dplyr::all_equal(runs, a))
 })
