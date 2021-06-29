@@ -37,4 +37,4 @@ srvAuth = function(verbose = FALSE) {
 }
 
 # This way we can use mocking in tests
-pkg_version <- function() packageDescription("motus", fields = "Version")
+pkg_version <- function() utils::packageDescription("motus", fields = "Version")
