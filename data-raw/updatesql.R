@@ -63,7 +63,9 @@ sql_versions <- rbind(
         sql = paste0("ALTER TABLE tagDeps ADD COLUMN test INTEGER;",
                      # Dropped views are recreated in later steps
                      "DROP VIEW IF EXISTS alltags;",
-                     "DROP VIEW IF EXISTS alltagsGPS;")))
+                     "DROP VIEW IF EXISTS alltagsGPS;",
+                     "DROP VIEW IF EXISTS allruns;",
+                     "DROP VIEW IF EXISTS allrunsGPS;")))
 
 sql_versions <- rbind(
   sql_versions,
@@ -79,6 +81,8 @@ sql_versions <- rbind(
         sql = paste0("DROP VIEW IF EXISTS allambigs;",   # Remove Views so we can delete the table
                      "DROP VIEW IF EXISTS alltagsGPS;", 
                      "DROP VIEW IF EXISTS alltags;",
+                     "DROP VIEW IF EXISTS allruns;",
+                     "DROP VIEW IF EXISTS allrunsGPS;",
                      "ALTER TABLE tagAmbig RENAME TO tagAmbig2;",
                      makeTable(name = "tagAmbig"), 
                      "INSERT INTO tagAmbig SELECT * FROM tagAmbig2;
@@ -92,7 +96,9 @@ sql_versions <- rbind(
         # Remove Views, will be recreated in next step
         sql = paste0("DROP VIEW IF EXISTS allambigs;",
                      "DROP VIEW IF EXISTS alltagsGPS;", 
-                     "DROP VIEW IF EXISTS alltags;"))
+                     "DROP VIEW IF EXISTS alltags;",
+                     "DROP VIEW IF EXISTS allruns;",
+                     "DROP VIEW IF EXISTS allrunsGPS;"))
 )
 
 sql_versions <- dplyr::mutate(sql_versions, 
