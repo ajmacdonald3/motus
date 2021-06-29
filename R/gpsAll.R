@@ -27,7 +27,7 @@
 #'                    dir = system.file("extdata", package = "motus"))
 #'   
 #' # Get all GPS points
-#' sql.motus <- gpsAll(sql.motus)
+#' \dontrun{sql.motus <- gpsAll(sql.motus)}
 #' 
 #' # Access 'gpsAll' table
 #' library(dplyr)
