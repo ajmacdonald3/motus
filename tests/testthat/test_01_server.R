@@ -1,5 +1,5 @@
-context("Test Server Access")
 
+# srvXXX tests ---------------------------------------
 test_that("srvXXX work as expected", {
   
   skip_if_no_auth()
@@ -13,23 +13,23 @@ test_that("srvXXX work as expected", {
     expect_s3_class("data.frame")
   expect_gt(nrow(s), 0)
   
-  # srvActivityForBatches - From SG-1116BBBK0C40
-  expect_silent(s <- srvActivityForBatches(batchID = 1902447)) %>%
+  # srvActivityForBatches - From Project 4, non-deprecated
+  expect_silent(s <- srvActivityForBatches(batchID = 118721)) %>%
     expect_s3_class("data.frame")
   expect_gt(nrow(s), 0)
   
   # srvAPIinfo
   expect_silent(s <- srvAPIinfo()) %>%
     expect_type("list")
-  expect_named(s, c("maxRows", "dataVersion"))
+  expect_named(s, c("maxRows", "dataVersion", "currentPkgVersion"))
   expect_gt(s$maxRows, 0)
   expect_gt(s$dataVersion, 0)
   
   # srvBatchesForAll - ONLY FOR ADMINS
   expect_error(srvBatchesForAll(batchID = 0))
   
-  # srvBatchesForReceiver
-  expect_silent(s <- srvBatchesForReceiver(deviceID = 1201, batchID = 0)) %>%
+  # srvBatchesForReceiver - From Project 1 (SG-4002BBBK1580)
+  expect_silent(s <- srvBatchesForReceiver(deviceID = 217, batchID = 0)) %>%
     expect_s3_class("data.frame")
   expect_gt(nrow(s), 0)
   
@@ -38,8 +38,26 @@ test_that("srvXXX work as expected", {
     expect_s3_class("data.frame")
   expect_gt(nrow(s), 0)
   
+  #srvBatchesForAllDeprecated
+  expect_error(s <- srvBatchesForAllDeprecated(batchID = 0))
+  
+  #srvBatchesForReceiverDeprecated
+  expect_silent(s <- srvBatchesForReceiverDeprecated(217)) %>%
+    expect_s3_class("data.frame")
+  expect_gt(nrow(s), 0)
+  
+  #srvBatchesForTagDeprecated
+  expect_silent(s <- srvBatchesForTagProjectDeprecated(1)) %>%
+    expect_s3_class("data.frame")
+  expect_gt(nrow(s), 0)
+  
   # srvDeviceIDForReceiver
   expect_silent(s <- srvDeviceIDForReceiver(serno = "CTT-5031194D3168")) %>%
+    expect_s3_class("data.frame")
+  expect_gt(nrow(s), 0)
+  
+  # srvGPSForAll - deviceID = 6115; CTT-5031194D3168
+  expect_silent(s <- srvGPSForAll(gpsID = 0)) %>%
     expect_s3_class("data.frame")
   expect_gt(nrow(s), 0)
   
@@ -83,17 +101,17 @@ test_that("srvXXX work as expected", {
   expect_gt(nrow(s$projs), 0)
   
   # srvNodes
-  expect_silent(s <- srvNodes(projectID = 207, batchID = 633664)) %>%
+  expect_silent(s <- srvNodes(projectID = 207, batchID = 1019183)) %>%
     expect_s3_class("data.frame")
   expect_gt(nrow(s), 0)
   
   # srvProjectAmbiguitiesForTagProject - *****************************
-  expect_silent(s <- srvProjectAmbiguitiesForTagProject(projectID = 207)) %>%
+  expect_silent(s <- srvProjectAmbiguitiesForTagProject(projectID = 176)) %>%
     expect_s3_class("data.frame")
-  expect_equal(nrow(s), 0)  ## TEST WITH SOMETHING MORE 
+  expect_equal(nrow(s), 0)  ## WHAT IS THIS, EXACTLY?
   
   # srvPulseCountsForReceiver - CTT-5031194D3168
-  expect_silent(s <- srvPulseCountsForReceiver(batchID = 1941719, ant = 0)) %>%
+  expect_silent(s <- srvPulseCountsForReceiver(batchID = 40570, ant = 0)) %>%
     expect_s3_class("data.frame")
   expect_gt(nrow(s), 0)
   
@@ -112,8 +130,8 @@ test_that("srvXXX work as expected", {
   expect_gt(nrow(s$nodeDeps), 0)
   expect_gt(nrow(s$projs), 0)
   
-  # srvRunsForReceiver - CTT-5031194D3168
-  expect_silent(s <- srvRunsForReceiver(batchID = 1941719, runID = 0)) %>%
+  # srvRunsForReceiver - Proj 1 - SG-4002BBBK1580 - device id 217
+  expect_silent(s <- srvRunsForReceiver(batchID = 315571, runID = 0)) %>%
     expect_s3_class("data.frame")
   expect_gt(nrow(s), 0)
   
@@ -123,7 +141,7 @@ test_that("srvXXX work as expected", {
   expect_gt(nrow(s), 0)
   
   # srvSizeOfUpdateForReceiver
-  expect_silent(s <- srvSizeOfUpdateForReceiver(deviceID = 1201, batchID = 0)) %>%
+  expect_silent(s <- srvSizeOfUpdateForReceiver(deviceID = 217, batchID = 0)) %>%
     expect_s3_class("data.frame")
   expect_gt(nrow(s), 0)
   
