@@ -77,6 +77,7 @@
 
         ## API entry points for the data server (URLs relative to dataServerURL)
         API_API_INFO                            = "custom/api_info"
+        API_ACTIVITY_FOR_ALL                    = "custom/activity_for_all"
         API_ACTIVITY_FOR_BATCHES                = "custom/activity_for_batch"
         API_DEVICE_ID_FOR_RECEIVER              = "custom/deviceID_for_receiver"
         API_RECEIVERS_FOR_PROJECT               = "custom/receivers_for_project"
@@ -92,6 +93,8 @@
         API_HITS_FOR_RECEIVER                   = "custom/hits_for_receiver"
         API_GPS_FOR_TAG_PROJECT                 = "custom/gps_for_tag_project"
         API_GPS_FOR_RECEIVER                    = "custom/gps_for_receiver"
+        API_GPS_FOR_RECIEVER_ALL                = "custom/gps_for_receiver_all"
+        API_PROJECT_AMBIGUITIES_FOR_TAG_PROJECT = "custom/project_ambiguities_for_tag_project"
         API_PULSE_COUNTS_FOR_RECEIVER           = "custom/pulse_counts_for_receiver"
         API_METADATA_FOR_TAGS                   = "custom/metadata_for_tags"
         API_METADATA_FOR_RECEIVERS              = "custom/metadata_for_receivers"
@@ -102,9 +105,6 @@
         API_TAGS_FOR_AMBIGUITIES                = "custom/tags_for_ambiguities"
         API_SIZE_OF_UPDATE_FOR_TAG_PROJECT      = "custom/size_of_update_for_tag_project"
         API_SIZE_OF_UPDATE_FOR_RECEIVER         = "custom/size_of_update_for_receiver"
-        API_PROJECT_AMBIGUITIES_FOR_TAG_PROJECT = "custom/project_ambiguities_for_tag_project"
-        API_ACTIVITY_FOR_ALL                    = "custom/activity_for_all"
-        API_GPS_FOR_RECIEVER_ALL                = "custom/gps_for_receiver_all"
 
         ## a list of field names which must be formatted as floats so that the
         ## motus API recognizes them correctly.  This means that if they happen
