@@ -25,9 +25,6 @@ test_that("srvXXX work as expected", {
   expect_gt(s$maxRows, 0)
   expect_gt(s$dataVersion, 0)
   
-  # srvBatchesForAll - ONLY FOR ADMINS
-  expect_error(srvBatchesForAll(batchID = 0))
-  
   # srvBatchesForReceiver - From Project 1 (SG-4002BBBK1580)
   expect_silent(s <- srvBatchesForReceiver(deviceID = 217, batchID = 0)) %>%
     expect_s3_class("data.frame")
@@ -37,9 +34,6 @@ test_that("srvXXX work as expected", {
   expect_silent(s <- srvBatchesForTagProject(projectID = 204, batchID = 0)) %>%
     expect_s3_class("data.frame")
   expect_gt(nrow(s), 0)
-  
-  #srvBatchesForAllDeprecated
-  expect_error(s <- srvBatchesForAllDeprecated(batchID = 0))
   
   #srvBatchesForReceiverDeprecated
   expect_silent(s <- srvBatchesForReceiverDeprecated(217)) %>%
