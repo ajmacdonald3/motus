@@ -11,8 +11,8 @@ teardown({
 })
 
 
-# ensureDBTables creates database -----------------------------------------
-test_that("ensureDBTables() creates database", {
+# Create DB, includes any new fields -----------------------------------------
+test_that("Create DB, includes any new fields", {
   expect_silent(temp <- dbplyr::src_dbi(DBI::dbConnect(RSQLite::SQLite(), "temp.motus")))
   expect_length(DBI::dbListTables(temp$con), 0)
   
@@ -55,6 +55,10 @@ test_that("ensureDBTables() creates database", {
   
   # Expect new columns in hits
   expect_true(all(c("validated") %in% DBI::dbListFields(temp$con, "hits")))
+  
+  # Expect new columns in actiivty
+  expect_true(all(c("numGPSfix") %in% DBI::dbListFields(temp$con, "activity")))
+  
 
   unlink("temp.motus")
 

@@ -80,13 +80,13 @@ projects/receivers.
 ## Adding and Updating
 
 ### Adding a new field/column
-- Make change to `ensureDBTables()`
+- Source `data-raw/internal_data.R`, this will run `data-raw/field_names.R` which
+  should grab the new field name from the server and add it to the list of tables
+    - If there's a special SQL command, however, you'll have add that by hand to the 
+    table in `data-raw/field_names.R`
 - Add update to `data-raw/updatesql.R` (run script, re-build package locally)
-- Add test to make sure new field is added (test_sqlite and test_data_returned)
+- Add test to make sure new field is added (`tests/testthat/test_02_sqlite.R`)
+  and filled with data (`tests/testthat/test_07_data_returned.R`)
 - Update internal data `source("data-raw/sample_data.R")`
 - Update NEWS.md
 - Push!
-
-
-
-

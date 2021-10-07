@@ -23,8 +23,7 @@ t <- data.frame()
 t <- field_names %>%
   filter(str_detect(table, "batches_activity")) %>%
   mutate(table = "activity",
-         keys = column %in% c("batchID", "ant", "hourBin"),
-         uniques = column %in% c("batchID", "ant", "hourBin")) %>%
+         keys = column %in% c("batchID", "ant", "hourBin")) %>%
   bind_rows(t, .)
 
 # activityAll ------------------------------------------------------------------
@@ -157,9 +156,9 @@ t <- field_names %>%
 t <- field_names %>%
   filter(str_detect(table, "tags_deps")) %>%
   add_row(column = "bandNumber", type = "TEXT") %>%
-  add_row(column = "id", type = "INT") %>%
-  add_row(column = "bi", type = "INT") %>%
-  add_row(column = "fullID", type = "INT") %>%
+  add_row(column = "id", type = "INTEGER") %>%
+  add_row(column = "bi", type = "INTEGER") %>%
+  add_row(column = "fullID", type = "INTEGER") %>%
   add_row(column = "status", type = "TEXT") %>%
   mutate(table = "tagDeps",
          keys = column == "deployID",
@@ -240,8 +239,8 @@ t <- tribble(
 # meta --------------------------------------------------------------------
 t <- tribble(
   ~column,    ~type,
-  "key",      "CHAR",     # name of key for meta data
-  "val",      "CHAR") %>% # character string giving meta data; might be in JSON format
+  "key",      "TEXT",     # name of key for meta data
+  "val",      "TEXT") %>% # character string giving meta data; might be in JSON format
   mutate(table = "meta", 
          keys = column == "key",
          not_nulls = column == "key",
@@ -312,10 +311,13 @@ t <- filter(t, table == "recvDeps") %>%
 # runsFilter --------------------------------------------------------------
 t <- tribble(
   ~column,       ~type,
-  "filterID",    "INTEGER",            # locally unique filterID
-  "runID",       "INTEGER",            # unique ID of the run record to which the filter applies
-  "motusTagID",  "INTEGER",            # unique ID of the Motus tag. Should match the actual motusTagID, not the negative ambigID in the case of ambiguous runs.
-  "probability", "REAL") %>%           # probability (normally between 0 and 1) attached to the run record
+  "filterID",    "INTEGER",  # locally unique filterID
+  "runID",       "INTEGER",  # unique ID of the run record to which the filter applies
+  "motusTagID",  "INTEGER",  # unique ID of the Motus tag. Should match the 
+                             # actual motusTagID, not the negative ambigID 
+                             # in the case of ambiguous runs.
+  "probability", "REAL") %>% # probability (normally between 0 and 1) 
+                              # attached to the run record
   mutate(table = "runsFilters",
          keys = column %in% c("filterID", "runID", "motusTagID"),
          not_nulls = TRUE,
@@ -328,12 +330,17 @@ t <- tribble(
 # ** COMBINE ---------------------------------------------------------------
 sql_fields <- t %>%
   as_tibble() %>%
+  mutate(type = case_when(str_detect(type, "INT|BIT") ~ "INTEGER",
+                          str_detect(type, "VARCHAR") ~ "TEXT",
+                          str_detect(type, "FLOAT|DECIMAL") ~ "REAL", 
+                          TRUE ~ type)) %>%
   select(-ordinal_position, -is_nullable) %>%
   group_by(table) %>%
-  mutate(keys = if_else(keys, 
-                        glue("PRIMARY KEY({glue_collapse(column[keys], sep = ',')})"), 
-                        ""),
-         keys = tidyr::replace_na(keys, "")) %>%
+  mutate(keys = if_else(
+    keys, 
+    glue("PRIMARY KEY({glue_collapse(column[keys], sep = ',')})"), 
+    ""),
+    keys = tidyr::replace_na(keys, "")) %>%
   ungroup() %>%
   mutate(across(c(-defaults, -references), tidyr::replace_na, FALSE), #most missing options get FALSE
          # Columns with special words are quoted

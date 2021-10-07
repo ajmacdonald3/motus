@@ -16,9 +16,9 @@ test_that("Tag data returned as expected", {
   skip_if_no_auth()
   
   orig <- getOption("motus.test.max")
-  options(motus.test.max = 60) # will be at least 200mb?
+  options(motus.test.max = 45) # will be at least 200mb?
   
-  expect_message(tags <- tagme(projRecv = 207, new = TRUE, update = TRUE)) %>%
+  expect_message(tags <- tagme(projRecv = 213, new = TRUE, update = TRUE)) %>%
     expect_is("src_SQLiteConnection")
   
   # Tables exists
@@ -31,6 +31,7 @@ test_that("Tag data returned as expected", {
   expect_silent(a <- dplyr::tbl(tags$con, "activity") %>% dplyr::collect())
   expect_true(nrow(a) > 0)
   expect_false(any(sapply(a, function(x) all(is.na(x))))) # No all missing values
+  expect_true(all(c(1, NA_integer_) %in% unique(a$numGPSfix))) # Check new field
   
   expect_is(a$ant, "character")   # All numeric/integer (except ant)
   for(i in names(a)[names(a) != "ant"]) {

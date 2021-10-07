@@ -1,6 +1,13 @@
-# IMPORTANT! RUN THIS ENTIRE FILE AFTER MAKING ANY CHANGES
+# IMPORTANT! RUN THIS ENTIRE FILE AFTER MAKING ANY CHANGES and then re-build and re-load the package
 
 sql_versions <- dplyr::tibble()
+
+# sandbox item, update date when merged
+sql_versions <- rbind(
+  sql_versions,
+  cbind(date = "2021-10-07",
+        descr = "Add numGPSfix field to activity table",
+        sql = "ALTER TABLE activity ADD COLUMN numGPSfix INTEGER;"))
 
 # sandbox item, update date when merged
 sql_versions <- rbind(
