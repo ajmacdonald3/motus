@@ -556,3 +556,69 @@ test_that("sunRiseSet() returns sunset times", {
   
   unlink("project-176.motus")
 })
+
+
+# deprecateBatches() -------------------------------------
+
+test_that("deprecated batches are removed from tables", {
+  skip_if_no_auth()
+  
+  # Deprecated batches listed, but not removed to start
+  unlink("project-1.motus")
+  expect_message(t <- tagme(1, new = TRUE, update = TRUE))
+  dep <- dplyr::tbl(t, "deprecated") %>% 
+    dplyr::collect()
+  expect_gt(nrow(dep), 0)
+  expect_true(all(dep$removed == 0))
+  
+  # Make fake deprecated batches
+  d <- c(4597, 101694)
+  data.frame(batchID = d, batchFilter = 4, removed = 0) %>%
+    DBI::dbWriteTable(t$con, "deprecated", ., append = TRUE)
+  
+  # To start, expect deprecated batches in data
+  dplyr::tbl(t, "runs") %>% 
+    dplyr::filter(.data$batchIDbegin %in% d) %>%
+    dplyr::collect() %>%
+    nrow() %>%
+    expect_gt(., 0)
+  
+  for(i in DBI::dbListTables(t$con)) {
+    if("batchID" %in% DBI::dbListFields(t$con, i) &
+       DBI::dbExecute(t$con, glue::glue("SELECT * FROM {i} LIMIT 1")) > 0) {
+      dplyr::tbl(t, i) %>% 
+        dplyr::filter(.data$batchID %in% !!d) %>%
+        dplyr::collect() %>%
+        nrow() %>%
+        expect_gt(., 0)
+    }
+  }
+
+  # Deprecate batches
+  expect_message(removeDeprecated(t, ask = FALSE))
+  dep <- dplyr::tbl(t, "deprecated") %>% 
+    dplyr::collect()
+  expect_gt(nrow(dep), 0)
+  expect_true(all(dep$removed == 1))
+
+  # With deprecated, expect deprecated batches removed
+  dplyr::tbl(t, "runs") %>% 
+    dplyr::filter(.data$batchIDbegin %in% !!d) %>%
+    dplyr::collect() %>%
+    nrow() %>%
+    expect_equal(., 0)
+  
+  for(i in DBI::dbListTables(t$con)) {
+    if("batchID" %in% DBI::dbListFields(t$con, i) &
+       DBI::dbExecute(t$con, glue::glue("SELECT * FROM {i} LIMIT 1")) > 0) {
+      dplyr::tbl(t, i) %>% 
+        dplyr::filter(.data$batchID %in% !!d) %>%
+        dplyr::collect() %>%
+        nrow() %>%
+        expect_equal(., 0)
+    }
+  }
+
+  unlink("project-1.motus")  
+})
+

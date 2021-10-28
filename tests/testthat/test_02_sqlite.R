@@ -10,16 +10,36 @@ teardown({
   unlink(list.files(pattern = "*.motus"))
 })
 
+# Create DB, includes new tables
+
+test_that("Create DB, includes any new tables", {
+  temp <- dbplyr::src_dbi(DBI::dbConnect(RSQLite::SQLite(), "temp.motus")) %>%
+    expect_silent()
+  expect_length(DBI::dbListTables(temp$con), 0)
+  expect_silent(ensureDBTables(temp, 176, quiet = TRUE))
+  
+  t <- DBI::dbListTables(temp$con)
+  
+  # Expect activityAll and gpsAll
+  expect_true(all(c("activityAll", "gpsAll") %in% t)) 
+  
+  # Expect Deprecated
+  expect_true("deprecated" %in% t)
+  
+  unlink("temp.motus")
+})
 
 # Create DB, includes any new fields -----------------------------------------
 test_that("Create DB, includes any new fields", {
-  expect_silent(temp <- dbplyr::src_dbi(DBI::dbConnect(RSQLite::SQLite(), "temp.motus")))
+  expect_silent(temp <- dbplyr::src_dbi(DBI::dbConnect(RSQLite::SQLite(), 
+                                                       "temp.motus")))
   expect_length(DBI::dbListTables(temp$con), 0)
   
   expect_message(ensureDBTables(temp, 176, quiet = FALSE))
   expect_silent(ensureDBTables(temp, 176, quiet = TRUE))
-  expect_silent(temp <- dbplyr::src_dbi(DBI::dbConnect(RSQLite::SQLite(), "temp.motus")))
-  expect_length(t <- DBI::dbListTables(temp$con), 31)
+  expect_silent(temp <- dbplyr::src_dbi(DBI::dbConnect(RSQLite::SQLite(), 
+                                                       "temp.motus")))
+  expect_length(t <- DBI::dbListTables(temp$con), 32)
   
   # Expect columns in the tables
   for(i in t) expect_gte(ncol(dplyr::tbl(temp$con, !!i)), 2)
@@ -31,9 +51,6 @@ test_that("Create DB, includes any new fields", {
   }
   expect_equal(nrow(DBI::dbGetQuery(temp$con, "SELECT * FROM admInfo")), 1)
   expect_equal(nrow(DBI::dbGetQuery(temp$con, "SELECT * FROM meta")), 2)
-  
-  # Expect activityAll and gpsAll
-  expect_true(all(c("activityAll", "gpsAll") %in% t))
   
   # Expect new columns age/sex in tagDeps
   expect_true(all(c("age", "sex") %in% DBI::dbListFields(temp$con, "tagDeps")))
@@ -56,12 +73,10 @@ test_that("Create DB, includes any new fields", {
   # Expect new columns in hits
   expect_true(all(c("validated") %in% DBI::dbListFields(temp$con, "hits")))
   
-  # Expect new columns in actiivty
+  # Expect new columns in activity
   expect_true(all(c("numGPSfix") %in% DBI::dbListFields(temp$con, "activity")))
-  
 
   unlink("temp.motus")
-
 })
 
 

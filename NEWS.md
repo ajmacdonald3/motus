@@ -5,6 +5,9 @@ large datasets
 * New field/column `attachment` in `tagDeps` table
 * `gpsAll()` and `activityAll()` functions allow downloading complete records
   of GPS points and Activity
+* Deprecated batches are now returned to a new table `deprecated` on `tagme()`
+* `deprecateBatches()` function to fetch and (optionally) remove deprecated batches
+  from all relevant tables
 
 # motus beta
 ### Bug fixes

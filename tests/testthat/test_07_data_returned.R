@@ -67,6 +67,12 @@ test_that("Tag data returned as expected", {
   expect_silent(a <- dplyr::tbl(tags$con, "hits") %>% dplyr::collect())
   expect_true(all(c("validated") %in% names(a)))
   
+  #deprecated
+  expect_silent(a <- dplyr::tbl(tags$con, "deprecated") %>% 
+                  dplyr::collect())
+  expect_true(all(c("batchID", "batchFilter", "removed")) %in% names(a))
+  expect_gt(nrow(a), 0)
+  
   options(motus.test.max = orig)
 })
 
@@ -110,7 +116,7 @@ test_that("Reciever data returned as expected", {
   expect_true(all(c("test", "age", "sex") %in% names(a)))
   expect_type(a$age, "character")
   expect_type(a$sex, "character")
-  expect_type(a$test, "double")
+  expect_type(a$test, "test")
   expect_true("tagDeployTest" %in% DBI::dbListFields(tags$con, "alltags"))
   expect_true("tagDeployTest" %in% DBI::dbListFields(tags$con, "alltagsGPS"))
   
@@ -119,6 +125,11 @@ test_that("Reciever data returned as expected", {
   expect_true(all(c("antFreq") %in% names(a)))
   expect_type(a$antFreq, "double")
   expect_true(any(a$antFreq > 1))
+  
+  #deprecated
+  expect_silent(a <- dplyr::tbl(tags$con, "deprecated") %>% dplyr::collect())
+  expect_true(all(c("batchID", "batchFilter")) %in% names(a))
+  expect_gt(nrow(a), 0)
   
   options(motus.test.max = orig)
 })

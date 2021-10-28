@@ -12,8 +12,7 @@ field_names <- srvSchema() %>%
   rename(column = column_name, table = table_name, type = data_type) %>%
   mutate(type = toupper(type),
          table = tolower(table)) %>%
-  filter(!str_detect(table, "deprecated"),
-         !column %in% c("accessLevel"),
+  filter(!column %in% c("accessLevel"),
          !str_detect(column, "is_private"))
 
 
@@ -45,9 +44,21 @@ t <- field_names %>%
 # batches ------------------------------------------------------------------
 # "batches" table applies to batches_for_receiver and batches_for_tag
 t <- field_names %>%
-  filter(str_detect(table, "batches_for_tag"),
+  filter(str_detect(table, "batches_for_tag_project$"),
          !column %in% c("version")) %>%
   mutate(table = "batches",
+         keys = column == "batchID") %>%
+  bind_rows(t, .)
+
+# deprecated ------------------------------------------------------------------
+# "deprecated" table applies to batches_for_receiver_deprecated and 
+# batches_for_tag_deprecated
+
+t <- field_names %>%
+  filter(str_detect(table, "batches_for_tag_project_deprecated"),
+         !column %in% c("motusProjectID", "motusDeviceID", "version")) %>%
+  add_row(column = "removed", type = "INTEGER") %>%
+  mutate(table = "deprecated",
          keys = column == "batchID") %>%
   bind_rows(t, .)
 
