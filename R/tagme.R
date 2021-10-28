@@ -25,6 +25,8 @@
 #'   `?activity` for more details
 #' @param skipNodes logical. Skip checking for and downloading `nodeData`? See
 #'   `?nodeData` for more details
+#' @param skipDeprecated logical. Skip fetching list of deprecated batches
+#'   stored in `deprecated`. See `?deprecateBatches()` for more details.
 #'
 #' @examples
 #'

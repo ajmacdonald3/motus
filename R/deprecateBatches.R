@@ -3,22 +3,19 @@
 #' Deprecated batches are removed from the online database but not from 
 #' local data files. This function fetches a list of deprecated batches
 #' (stored in the 'deprecated' table), and, optionally, removes these batches 
-#' from all tables that reference `batchIDs`
+#' from all tables that reference `batchID`s
 #'
 #' @param src src_sqlite object representing the database
-#' @param fetchOnly Logical. Only fetch batches that are deprecated. Don't 
+#' @param fetchOnly Logical. Only *fetch* batches that are deprecated. Don't 
 #'   remove deprecated batches from other tables.
 #' @param ask Logical. Ask for confirmation when removing deprecated batches
 #'
 #' @examples
 #'
-#' # download and access data from project 176 in sql format
-#' # usename and password are both "motus.sample"
-#' \dontrun{sql.motus <- tagme(176, new = TRUE, update = TRUE)}
+#' \dontrun{
 #' 
-#' # OR use example sql file included in `motus`
-#' sql.motus <- tagme(176, update = FALSE, 
-#'                    dir = system.file("extdata", package = "motus"))
+#' # Get motus db
+#' sql.motus <- tagme(1, new = TRUE, update = TRUE)}
 #'   
 #' # Access 'deprecated' table
 #' library(dplyr)
@@ -27,6 +24,10 @@
 #' # Fetch deprecated batches
 #' deprecateBatches(sql.motus, fetchOnly = TRUE)
 #' 
+#' # Remove deprecated batches
+#' deprecateBatches(sql.motus)
+#' 
+#' }
 #' 
 #' @export
 
