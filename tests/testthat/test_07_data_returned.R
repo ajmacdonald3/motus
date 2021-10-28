@@ -24,7 +24,7 @@ test_that("Tag data returned as expected", {
   
   # Tables exists
   for(i in c("activity", "nodeData", "nodeDeps", "gps", 
-             "hits", "runs", "batches", "deprecated")) {
+             "hits", "runs", "batches", "deprecated", "recvDeps")) {
     expect_true(!!i %in% DBI::dbListTables(tags$con))
   }
   
@@ -74,6 +74,15 @@ test_that("Tag data returned as expected", {
   expect_true(all(c("batchID", "batchFilter", "removed") %in% names(a)))
   expect_gt(nrow(a), 0)
   
+  #recDeps
+  expect_silent(a <- dplyr::tbl(tags$con, "recvDeps") %>% dplyr::collect())
+  expect_true(all(c("stationName", "stationID") %in% names(a)))
+  expect_is(a$stationName, "character")
+  expect_is(a$stationID, "integer")
+  expect_true(any(nchar(a$stationName) > 0))
+  expect_true(any(a$stationID > 0))
+  
+  
   options(motus.test.max = orig)
   unlink("project-213.motus")
 })
@@ -93,9 +102,10 @@ test_that("Reciever data returned as expected", {
     expect_is("src_SQLiteConnection")
   
   # Tables exists
-  expect_true("activity" %in% DBI::dbListTables(tags$con))
-  expect_true("nodeData" %in% DBI::dbListTables(tags$con))
-  expect_true("nodeDeps" %in% DBI::dbListTables(tags$con))
+  for(i in c("activity", "nodeData", "nodeDeps", "gps", 
+             "hits", "runs", "batches", "deprecated", "recvDeps")) {
+    expect_true(!!i %in% DBI::dbListTables(tags$con))
+  }
   
   #activity
   expect_silent(a <- dplyr::tbl(tags$con, "activity") %>% dplyr::collect())
@@ -132,6 +142,14 @@ test_that("Reciever data returned as expected", {
   expect_silent(a <- dplyr::tbl(tags$con, "deprecated") %>% dplyr::collect())
   expect_true(all(c("batchID", "batchFilter", "removed") %in% names(a)))
   expect_gt(nrow(a), 0)
+  
+  #recDeps
+  expect_silent(a <- dplyr::tbl(tags$con, "recvDeps") %>% dplyr::collect())
+  expect_true(all(c("stationName", "stationID") %in% names(a)))
+  expect_is(a$stationName, "character")
+  expect_is(a$stationID, "integer")
+  expect_true(any(nchar(a$stationName) > 0))
+  expect_true(any(a$stationID > 0))
   
   options(motus.test.max = orig)
   unlink("SG-3115BBBK0782.motus")

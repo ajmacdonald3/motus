@@ -128,9 +128,10 @@ t <- field_names %>%
   add_row(column = "macAddress", type = "TEXT") %>%
   mutate(table = "recvDeps",
          keys = column == "deployID",
-         extra = list(c("CREATE INDEX IF NOT EXISTS recvDeps_serno on recvDeps(serno)",
-                        "CREATE INDEX IF NOT EXISTS recvDeps_deviceID on recvDeps(deviceID)",
-                        "CREATE INDEX IF NOT EXISTS recvDeps_projectID on recvDeps(projectID)"))) %>%
+         extra = list(c(
+           "CREATE INDEX IF NOT EXISTS recvDeps_serno on recvDeps(serno)",
+           "CREATE INDEX IF NOT EXISTS recvDeps_deviceID on recvDeps(deviceID)",
+           "CREATE INDEX IF NOT EXISTS recvDeps_projectID on recvDeps(projectID)"))) %>%
   bind_rows(t, .)
 
 # runs --------------------------------------------------------------------

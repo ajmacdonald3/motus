@@ -89,6 +89,7 @@ projects/receivers.
   and filled with data (`tests/testthat/test_07_data_returned.R`)
 - Update internal data `source("data-raw/sample_data.R")`
 - Update NEWS.md
+- Run tests
 - Push!
 
 ### Adding a new table

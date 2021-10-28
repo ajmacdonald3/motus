@@ -3,12 +3,14 @@
 * New `allruns` and `allrunsGPS` views for quicker first passes of the data with 
 large datasets
 * New field/column `attachment` in `tagDeps` table
-* New field/column `numGPSfix` in `activity` table
+* New field/column `numGPSfix` in `activity` and `activityAll` tables
+* New field/columns `stationName` and `stationID` in `recvDeps` tables
 * `gpsAll()` and `activityAll()` functions allow downloading complete records
   of GPS points and Activity
 * Deprecated batches are now returned to a new table `deprecated` on `tagme()`
 * `deprecateBatches()` function to fetch and (optionally) remove deprecated batches
   from all relevant tables
+
 
 # motus beta
 ### Bug fixes

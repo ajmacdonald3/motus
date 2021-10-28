@@ -5,9 +5,18 @@ sql_versions <- dplyr::tibble()
 # sandbox item, update date when merged
 sql_versions <- rbind(
   sql_versions,
+  cbind(date = "2021-10-28",
+        descr = "Add stationName and stationID fields to recvDeps table",
+        sql = paste0("ALTER TABLE recvDeps ADD COLUMN stationName TEXT;",
+                     "ALTER TABLE recvDeps ADD COLUMN stationID INTEGER;")))
+
+# sandbox item, update date when merged
+sql_versions <- rbind(
+  sql_versions,
   cbind(date = "2021-10-07",
-        descr = "Add numGPSfix field to activity table",
-        sql = "ALTER TABLE activity ADD COLUMN numGPSfix INTEGER;"))
+        descr = "Add numGPSfix field to activity and activityAll tables",
+        sql = paste0("ALTER TABLE activity ADD COLUMN numGPSfix INTEGER;",
+                     "ALTER TABLE activityAll ADD COLUMN numGPSfix INTEGER;")))
 
 # sandbox item, update date when merged
 sql_versions <- rbind(

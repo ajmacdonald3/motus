@@ -2,8 +2,9 @@
 
 sample_auth()
 
-#file.remove("./inst/extdata/project-176.motus")
-tags <- tagme(projRecv = 176, new = FALSE, update = TRUE, "./inst/extdata/")
+#unlink("./inst/extdata/project-176.motus")
+new <- !file.exists("./inst/extdata/project-176.motus")
+tags <- tagme(projRecv = 176, new = new, update = TRUE, "./inst/extdata/")
 shorebirds <- dplyr::tbl(tags, "alltagsGPS") %>%
   dplyr::collect()
 
@@ -19,11 +20,12 @@ if(have_auth()) {
   # Update project 4
   #file.remove("./inst/extdata/project-4.motus")
   #tagme(4, new = TRUE, update = TRUE, dir = "./inst/extdata/")
-  #tagme(4, new = FALSE, update = FALSE, dir = "./inst/extdata/")
+  #tagme(4, new = FALSE, update = TRUE, dir = "./inst/extdata/")
 
   
   # Create small sample for GPS tests
-  file.copy("./inst/extdata/project-4.motus", "./inst/extdata/gps_sample.motus", overwrite = TRUE)
+  file.copy("./inst/extdata/project-4.motus", 
+            "./inst/extdata/gps_sample.motus", overwrite = TRUE)
   tags <- DBI::dbConnect(RSQLite::SQLite(), "./inst/extdata/gps_sample.motus")
   
   # Find good data section

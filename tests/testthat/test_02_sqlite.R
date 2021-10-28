@@ -73,8 +73,13 @@ test_that("Create DB, includes any new fields", {
   # Expect new columns in hits
   expect_true(all(c("validated") %in% DBI::dbListFields(temp$con, "hits")))
   
-  # Expect new columns in activity
+  # Expect new columns in activity/activityAll
   expect_true(all(c("numGPSfix") %in% DBI::dbListFields(temp$con, "activity")))
+  expect_true(all(c("numGPSfix") %in% DBI::dbListFields(temp$con, "activityAll")))
+  
+  # Expect new columns in recvDeps
+  expect_true(all(c("stationName", "stationID") %in% 
+                    DBI::dbListFields(temp$con, "recvDeps")))
 
   unlink("temp.motus")
 })
