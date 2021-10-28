@@ -143,9 +143,7 @@ tagme <- function(projRecv, update = TRUE, new = FALSE, dir = getwd(),
     if(!countOnly) {
       if(!skipActivity) rv <- activity(src = rv, resume = TRUE)
       if(!skipNodes) rv <- nodeData(src = rv, resume = TRUE)
-      if(!skipDeprecated && projRecv != 176) {
-        rv <- fetchDeprecated(src = rv)
-      }
+      if(!skipDeprecated) rv <- fetchDeprecated(src = rv)
     }
   }
   
