@@ -165,9 +165,7 @@ test_that("srvXXX work as expected", {
 
 test_that("tagme() errors appropriately", {
   skip_on_cran()
-  skip_on_appveyor()
-  skip_on_travis()
-  
+
   unlink("project-10.motus")
   unlink("CTT-5031194D3168")
   
@@ -190,7 +188,6 @@ test_that("tagme() errors appropriately", {
 # Projects downloads ---------------------------------------
 test_that("tagme() downloads data - Projects", {
   skip_on_cran()
-  skip_on_appveyor()
   
   unlink("project-176.motus")
   
@@ -205,7 +202,6 @@ test_that("tagme() downloads data - Projects", {
 # Receivers download ------------------------------------------------------
 test_that("tagme() downloads data - Receivers", {
   skip_on_cran()
-  skip_on_appveyor()
   skip_if_no_auth()
   
   unlink("SG-3115BBBK1127.motus")
@@ -218,10 +214,11 @@ test_that("tagme() downloads data - Receivers", {
 # Projects countOnly = TRUE ---------------------------------------------------
 test_that("tagme with countOnly (tellme) - Projects", {
   skip_on_cran()
-  
   sample_auth()
   
-  file.copy(system.file("extdata", "project-176.motus", package = "motus"), ".")
+  unlink("project-176.motus")
+  file.copy(system.file("extdata", "project-176.motus", package = "motus"), 
+            ".")
   
   expect_silent(tagme(projRecv = 176, new = FALSE, 
                       update = TRUE, countOnly = TRUE)) %>%
