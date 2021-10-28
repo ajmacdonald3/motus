@@ -90,3 +90,18 @@ projects/receivers.
 - Update internal data `source("data-raw/sample_data.R")`
 - Update NEWS.md
 - Push!
+
+### Adding a new table
+- Add a section to `data-raw/field_names.R` pulling the new table data from the
+  server and adding it to the list of tables
+- In `ensureDBTables.R` either add it to the list of tables that are created 
+  empty, or add it to the section where tables are created and then immediately
+  filled with data (and add the data that should fill it). 
+- If the table has `batchIDs` add it to the list of tables in which to remove
+  deprecated `batchIDs` in `deprecateBatches()` in the `deprecateBatches.R` file.
+- You **shouldn't** need to add a section to `data-raw/updatesql.R`
+- Add test to make sure new field is added (`tests/testthat/test_02_sqlite.R`)
+  and filled with data (`tests/testthat/test_07_data_returned.R`)
+- Update internal data `source("data-raw/sample_data.R")`
+- Update NEWS.md
+- Push!

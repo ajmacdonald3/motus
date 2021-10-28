@@ -3,6 +3,7 @@
 * New `allruns` and `allrunsGPS` views for quicker first passes of the data with 
 large datasets
 * New field/column `attachment` in `tagDeps` table
+* New field/column `numGPSfix` in `activity` table
 * `gpsAll()` and `activityAll()` functions allow downloading complete records
   of GPS points and Activity
 * Deprecated batches are now returned to a new table `deprecated` on `tagme()`
