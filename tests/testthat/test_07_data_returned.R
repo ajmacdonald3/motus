@@ -15,6 +15,7 @@ test_that("Tag data returned as expected", {
   skip_on_cran()
   skip_if_no_auth()
   
+  unlink("project-213.motus")
   orig <- getOption("motus.test.max")
   options(motus.test.max = 45) # will be at least 200mb?
   
@@ -23,7 +24,7 @@ test_that("Tag data returned as expected", {
   
   # Tables exists
   for(i in c("activity", "nodeData", "nodeDeps", "gps", 
-             "hits", "runs", "batches")) {
+             "hits", "runs", "batches", "deprecated")) {
     expect_true(!!i %in% DBI::dbListTables(tags$con))
   }
   
@@ -70,10 +71,11 @@ test_that("Tag data returned as expected", {
   #deprecated
   expect_silent(a <- dplyr::tbl(tags$con, "deprecated") %>% 
                   dplyr::collect())
-  expect_true(all(c("batchID", "batchFilter", "removed")) %in% names(a))
+  expect_true(all(c("batchID", "batchFilter", "removed") %in% names(a)))
   expect_gt(nrow(a), 0)
   
   options(motus.test.max = orig)
+  unlink("project-213.motus")
 })
 
 
@@ -116,7 +118,7 @@ test_that("Reciever data returned as expected", {
   expect_true(all(c("test", "age", "sex") %in% names(a)))
   expect_type(a$age, "character")
   expect_type(a$sex, "character")
-  expect_type(a$test, "test")
+  expect_type(a$test, "integer")
   expect_true("tagDeployTest" %in% DBI::dbListFields(tags$con, "alltags"))
   expect_true("tagDeployTest" %in% DBI::dbListFields(tags$con, "alltagsGPS"))
   
@@ -128,10 +130,11 @@ test_that("Reciever data returned as expected", {
   
   #deprecated
   expect_silent(a <- dplyr::tbl(tags$con, "deprecated") %>% dplyr::collect())
-  expect_true(all(c("batchID", "batchFilter")) %in% names(a))
+  expect_true(all(c("batchID", "batchFilter", "removed") %in% names(a)))
   expect_gt(nrow(a), 0)
   
   options(motus.test.max = orig)
+  unlink("SG-3115BBBK0782.motus")
 })
 
 

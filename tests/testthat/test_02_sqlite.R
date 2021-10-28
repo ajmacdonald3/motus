@@ -161,16 +161,11 @@ test_that("new tables have character ant and port", {
 # missing tables recreated ------------------------------------------------
 test_that("Missing tables recreated silently", {
   sample_auth()
+  file.copy(system.file("extdata", "project-176.motus", package = "motus"), ".")
   tags <- tagme(176, new = FALSE, update = FALSE)
   
   t <- DBI::dbListTables(tags$con)
   t <- t[t != "admInfo"] # Don't try removing admInfo table
-  
-  # t <- c("activity", "antDeps", "batchRuns", "batches",
-  #        "clarified", "filters", "gps", "hits", "meta", "projAmbig", "projBatch",
-  #        "projs", "recvDeps", "recvs", "runs", "runsFilters", "species", "tagAmbig",
-  #        "tagDeps", "tagProps", "tags")
-  # 
   
   for(i in t) {
     # Remove table/view
@@ -181,11 +176,14 @@ test_that("Missing tables recreated silently", {
       expect_silent(DBI::dbExecute(tags$con, paste0("DROP VIEW ", !!i)))
       expect_false(DBI::dbExistsTable(tags$con, !!i))
     }
-    
-    # Add tables, no errors
-    expect_error(tags <- tagme(176, new = FALSE, update = TRUE), NA)
-    expect_true(DBI::dbExistsTable(tags$con, !!i))
   }
+  
+  # Add tables, no errors
+  expect_message(tags <- tagme(176, new = FALSE, update = TRUE))
+  
+  for(i in t) expect_true(DBI::dbExistsTable(tags$con, !!i))
+  
+  unlink("project-176.motus")
 })
 
 

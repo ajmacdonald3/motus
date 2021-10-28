@@ -11,7 +11,7 @@ test_that("table fields match server (sample auth)", {
                DBI::dbListFields(tags, "activityAll"), ignore.order = TRUE)
   
   expect_named(srvActivityForBatches(batchID = 53)[1,],
-               DBI::dbListFields(tags, "activity"), ignore.order = TRUE)
+               DBI::dbListFields(tags, "activity")[-18], ignore.order = TRUE)
   
   expect_named(srvBatchesForTagProject(projectID = 176, batchID = 53)[1,],
           c(DBI::dbListFields(tags, "batches"), "version"), ignore.order = TRUE)
