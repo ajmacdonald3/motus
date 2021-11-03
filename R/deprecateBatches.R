@@ -11,23 +11,31 @@
 #' @param ask Logical. Ask for confirmation when removing deprecated batches
 #'
 #' @examples
-#'
-#' \dontrun{
 #' 
-#' # Get motus db
-#' sql.motus <- tagme(1, new = TRUE, update = TRUE)}
+#' # Download and access data from project 176 in sql format
+#' 
+#' # usename and password are both "motus.sample"
+#' \dontrun{sql.motus <- tagme(176, new = TRUE, update = TRUE)}
+#' 
+#' # OR use example sql file included in `motus`
+#' sql.motus <- tagme(176, update = FALSE, 
+#'                    dir = system.file("extdata", package = "motus"))
 #'   
-#' # Access 'deprecated' table
+#' # Access 'deprecated' table using tbl() from dplyr
 #' library(dplyr)
-#' a <- tbl(sql.motus, "deprecated")
+#' tbl(sql.motus, "deprecated")
+#' 
+#' # See that there are deprecated batches in the data
+#' filter(tbl(sql.motus, "alltags"), batchID == 6000)
 #' 
 #' # Fetch deprecated batches
 #' deprecateBatches(sql.motus, fetchOnly = TRUE)
 #' 
-#' # Remove deprecated batches
-#' deprecateBatches(sql.motus)
+#' # Remove deprecated batches (will ask for confirmation unless ask = FALSE)
+#' deprecateBatches(sql.motus, ask = FALSE)
 #' 
-#' }
+#' # See that there are NO more deprecated batches in the data
+#' filter(tbl(sql.motus, "alltags"), batchID == 6000)
 #' 
 #' @export
 

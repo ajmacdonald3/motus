@@ -1,8 +1,9 @@
 # Create a small subset data frame for testing and examples
 
 sample_auth()
+set_testing(FALSE)
 
-#unlink("./inst/extdata/project-176.motus")
+unlink("./inst/extdata/project-176.motus")
 new <- !file.exists("./inst/extdata/project-176.motus")
 tags <- tagme(projRecv = 176, new = new, update = TRUE, "./inst/extdata/")
 shorebirds <- dplyr::tbl(tags, "alltagsGPS") %>%
