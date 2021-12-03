@@ -4,8 +4,13 @@
 \alias{timeToSunriset}
 \title{Obtain time to and from sunrise/sunset for a dataframe containing POSIXct times}
 \usage{
-timeToSunriset(data, lat = "recvDeployLat", lon = "recvDeployLon",
-  ts = "ts", units = "hours")
+timeToSunriset(
+  data,
+  lat = "recvDeployLat",
+  lon = "recvDeployLon",
+  ts = "ts",
+  units = "hours"
+)
 }
 \arguments{
 \item{data}{a selected table from .motus data, eg. "alltagsGPS", or a
@@ -71,7 +76,4 @@ sunrise <- timeToSunriset(df.alltags, units = "mins")
 # using data.frame df.alltags. NOTE: This only works if there are non-NA
 # gpsLat/gpsLon
 \dontrun{sunrise <- timeToSunriset(df.alltags, lat = "gpsLat", lon = "gpsLon")}
-}
-\author{
-Zoe Crysler \email{zcrysler@gmail.com}
 }

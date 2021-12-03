@@ -16,20 +16,19 @@
 #'
 #' @note This function does most of the work of fetching data and metadata from
 #' motus servers.  It is not intended to be called directly by users.
-#'
-#' @author John Brzustowski \email{jbrzusto@@REMOVE_THIS_PART_fastmail.fm}
 #' 
 #' @noRd
 
 motusUpdateDB = function(projRecv, src, countOnly, forceMeta=FALSE) {
     if (! is.numeric(projRecv) && ! is.character(projRecv))
-        stop ("projRecv must be an integer motus project ID, or a character receiver serial number")
+        stop("projRecv must be an integer motus project ID, ",
+             "or a character receiver serial number", call. = FALSE)
 
     if (! inherits(src, "src_sql"))
-        stop ("src must be a dplyr::src_sql object")
+        stop("src must be a dplyr::src_sql object", call. = FALSE)
 
     if (!is.logical(countOnly))
-        stop("countOnly must be a logical scalar")
+        stop("countOnly must be a logical scalar", call. = FALSE)
 
     if (is.numeric(projRecv))
         return(motusUpdateTagDB(src, countOnly, forceMeta))

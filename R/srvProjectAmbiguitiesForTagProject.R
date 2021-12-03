@@ -16,10 +16,10 @@
 #' }
 #'
 #' @noRd
-#'
-#' @author John Brzustowski \email{jbrzusto@@REMOVE_THIS_PART_fastmail.fm}
 
-srvProjectAmbiguitiesForTagProject = function(projectID) {
-    x = srvQuery(API=motus_vars$API_PROJECT_AMBIGUITIES_FOR_TAG_PROJECT, params=list(projectID=projectID))
-    return (structure(x, class = "data.frame", row.names=seq(along=x[[1]])))
+srvProjectAmbiguitiesForTagProject <- function(projectID, verbose = FALSE) {
+  x <- srvQuery(API = motus_vars$API_PROJECT_AMBIGUITIES_FOR_TAG_PROJECT,
+                params = list(projectID = projectID),
+                verbose = verbose)
+  structure(x, class = "data.frame", row.names = seq(along = x[[1]]))
 }

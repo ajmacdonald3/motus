@@ -4,9 +4,18 @@
 \alias{tagme}
 \title{Download motus tag detections to a database}
 \usage{
-tagme(projRecv, update = TRUE, new = FALSE, dir = getwd(),
-  countOnly = FALSE, forceMeta = FALSE, rename = FALSE,
-  skipActivity = FALSE, skipNodes = FALSE)
+tagme(
+  projRecv,
+  update = TRUE,
+  new = FALSE,
+  dir = getwd(),
+  countOnly = FALSE,
+  forceMeta = FALSE,
+  rename = FALSE,
+  skipActivity = FALSE,
+  skipNodes = FALSE,
+  skipDeprecated = FALSE
+)
 }
 \arguments{
 \item{projRecv}{integer. Project code from motus.org, \emph{or} character
@@ -42,6 +51,9 @@ newest version. If FALSE (default), user is prompted for action.}
 
 \item{skipNodes}{logical. Skip checking for and downloading \code{nodeData}? See
 \code{?nodeData} for more details}
+
+\item{skipDeprecated}{logical. Skip fetching list of deprecated batches
+stored in \code{deprecated}. See \code{?deprecateBatches()} for more details.}
 }
 \value{
 a dplyr::src_sqlite for the (possibly updated) database, or a list
@@ -77,13 +89,10 @@ Download motus tag detections to a database
 
 # t = tagme("SG-1234BBBK4567", dir="Projects/gulls")
 
-## update all existing project and receiver databases in \\code{dir}
+## update all existing project and receiver databases in \code{dir}
 # tagme()
 
 }
 \seealso{
 \code{\link{tellme}}, which is a synonym for \code{tagme(..., update=TRUE, countOnly=TRUE)}
-}
-\author{
-John Brzustowski \email{jbrzusto@REMOVE_THIS_PART_fastmail.fm}
 }

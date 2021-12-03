@@ -21,10 +21,10 @@
 #' }
 #'
 #' @noRd
-#'
-#' @author John Brzustowski \email{jbrzusto@@REMOVE_THIS_PART_fastmail.fm}
 
-srvHitsForTagProject = function(projectID, batchID, hitID=0) {
-    x = srvQuery(API=motus_vars$API_HITS_FOR_TAG_PROJECT, params=list(projectID=projectID, batchID=batchID, hitID=hitID))
+srvHitsForTagProject = function(projectID, batchID, hitID=0, verbose = FALSE) {
+    x = srvQuery(API=motus_vars$API_HITS_FOR_TAG_PROJECT, 
+                 params=list(projectID=projectID, batchID=batchID, hitID=hitID),
+                 verbose = verbose)
     return (structure(x, class = "data.frame", row.names=seq(along=x[[1]])))
 }

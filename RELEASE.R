@@ -15,15 +15,24 @@
 # 
 # When merging changes to master: 
 # 
-# - Make changes, push changes, test changes (beta/sandbox branch)
-# - git checkout master  (master branch)
-# - git merge betaX --no-ff --no-commit  (master branch)
-# - Revert API url to (i.e. should be main url, not point to beta/sandbox APIs)
-# - Committ changes as merge with betaX/sandbox
+# - Change api url to https://motus.org/api
+# - Change version to correct (non-dev) version
+# - Test changes (beta/sandbox branch)
+# - Push
+# - GitHub pull request, make sure tests pass, merge
+# - Sign release
 #
+# # When merging changes from master to sandbox:
+#
+# - git checkout sandbox  (sandbox branch)
+# - git merge master --no-ff --no-commit  (sandbox branch)
+# - Revert API url to (i.e. should be sandbox url, not point to master)
+# - Revert VERSION number (i.e. keep sandbox version, not master version)
+# - Commit changes as merge with master
+# - Check dates on updatesql, sandbox changes should be 'later' than beta
+# 
 # # When merging changes in beta to sandbox: 
 # 
-# - Make changes, push changes, test changes (beta branch)
 # - git checkout sandbox  (sandbox branch)
 # - git merge betaX --no-ff --no-commit  (sandbox branch)
 # - Revert API url to (i.e. should be sandbox url, not point to beta)
@@ -33,21 +42,16 @@
 # Steps/Commands to run before a package release -----------------------------
 
 ## Install required packages (if they don't already exist)
-pkgs <- c("DBI", "dplyr", "dbplyr", "httr", "geosphere", "ggplot2", "gridExtra",
-          "jsonlite", "lubridate", "magrittr", "maptools", "methods", "purrr",
-          "rlang", "RSQLite", "stringr", "tidyr", "ggmap", "RCurl", "roxygen2",
-          "spelling", "testthat")
-pkgs_to_install <- pkgs[!(pkgs %in% installed.packages()[, "Package"])]
-if(length(pkgs_to_install)) install.packages(pkgs_to_install)
+remotes::install_deps()
 
 
 ## IF MERGING SANDBOX
-# - Make sure that updatesql.R updates unique to sandbox have a date later than
+# - Make sure that data-raw/updatesql.R updates unique to sandbox have a date later than
 #   beta updates (otherwise they won't trigger)
 
 ## Update internal data files
 set_testing(set = FALSE) # Make sure to download full sets
-source("data-raw/updatesql.R")
+source("data-raw/internal_data.R")
 source("data-raw/sample_data.R")
 
 
@@ -64,25 +68,32 @@ spelling::update_wordlist() # All remaining words will be added to the ignore WO
 ## Finalize package version
 # - Update DESCRIPTION - package version
 # - Update .onLoad - API version
-v <- "3.0.1"
+v <- "5.0.0"
 v <- packageVersion("motus") # If dev version loaded with devtools::load_all()
 
 ## Checks
 devtools::check(run_dont_test = TRUE)   # Local, run long-running examples
+devtools::check(run_dont_test = FALSE)
+
 
 system("cd ..; R CMD build motus")
 system(paste0("cd ..; R CMD check motus_", v, ".tar.gz"))
 system(paste0("cd ..; R CMD check motus_", v, ".tar.gz --as-cran"))
 
-rhub::check_on_linux(show_status = FALSE)
-rhub::check_on_macos(show_status = FALSE)
-rhub::check_on_windows(show_status = FALSE)
-rhub::check_for_cran(show_status = FALSE)
+rhub::check_on_linux(paste0("../motus_", v, ".tar.gz"), show_status = FALSE)
+rhub::check_on_macos(paste0("../motus_", v, ".tar.gz"), show_status = FALSE)
+rhub::check_on_windows(paste0("../motus_", v, ".tar.gz"), show_status = FALSE)
+rhub::check_for_cran(paste0("../motus_", v, ".tar.gz"), show_status = FALSE)
 
 ## Windows checks (particularly if submitting to CRAN)
 devtools::check_win_release() # Win builder
 devtools::check_win_devel()
 devtools::check_win_oldrelease()
+
+## Update motus website
+pkgdown::build_site()
+pkgdown::build_home()
+pkgdown::build_articles()
 
 
 ## Note: non-ASCII files found

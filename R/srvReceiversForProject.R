@@ -26,10 +26,10 @@
 #' and one row for each receiver deployment by project \code{projectID}
 #'
 #' @noRd
-#'
-#' @author John Brzustowski \email{jbrzusto@@REMOVE_THIS_PART_fastmail.fm}
 
-srvReceiversForProject = function(projectID) {
-    x = srvQuery(API=motus_vars$API_RECEIVERS_FOR_PROJECT, params=list(projectID=projectID))
+srvReceiversForProject = function(projectID, verbose = FALSE) {
+    x = srvQuery(API=motus_vars$API_RECEIVERS_FOR_PROJECT, 
+                 params=list(projectID=projectID), 
+                 verbose = verbose)
     return (structure(x, class = "data.frame", row.names=seq(along=x[[1]])))
 }

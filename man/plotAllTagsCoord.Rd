@@ -4,8 +4,12 @@
 \alias{plotAllTagsCoord}
 \title{Plot all tag detections by latitude or longitude}
 \usage{
-plotAllTagsCoord(data, coordinate = "recvDeployLat", ts = "ts",
-  tagsPerPanel = 5)
+plotAllTagsCoord(
+  data,
+  coordinate = "recvDeployLat",
+  ts = "ts",
+  tagsPerPanel = 5
+)
 }
 \arguments{
 \item{data}{a selected table from .motus data, eg. "alltags", or a data.frame
@@ -62,7 +66,4 @@ plotAllTagsCoord(df.alltags, coordinate = "recvDeployLat")
 # Plot dataframe df.alltags using lat for select motus tagIDs
 plotAllTagsCoord(filter(df.alltags, motusTagID \%in\% c(19129, 16011, 17357)), 
                  tagsPerPanel = 1)
-}
-\author{
-Zoe Crysler \email{zcrysler@gmail.com}
 }

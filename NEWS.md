@@ -1,8 +1,72 @@
+# motus SANDBOX
+### New features
+* New `allruns` and `allrunsGPS` views for quicker first passes of the data with 
+large datasets
+* New field/column `attachment` in `tagDeps` table
+* New field/column `numGPSfix` in `activity` and `activityAll` tables
+* New field/columns `stationName` and `stationID` in `recvDeps` tables
+* `gpsAll()` and `activityAll()` functions allow downloading complete records
+  of GPS points and Activity
+* Deprecated batches are now returned to a new table `deprecated` on `tagme()`
+* `deprecateBatches()` function to fetch and (optionally) remove deprecated batches
+  from all relevant tables
+
+
+# motus beta
+### Bug fixes
+* fixed bug in `filterByActivity()` resulting in `NA` probabilities
+* fixed bug in `getGPS()` which crashed if `ts` had been converted to date/time format
+
+# motus 4.0.6
+### Bug fixes
+* fixed bug resulting in missing metadata tables, and permission errors resulting
+from JSON formatting
+* fixed bug where `forceMeta` didn't force metadata download for previously downloaded tags
+* fixed warnings produced by `plotRouteMap()` on old versions of R
+
+# motus 4.0.5
+### Bug fixes
+* removed not null constraint on tsEnd in nodeDeps
+
+
+# motus 4.0.4
+### Bug fixes
+* fixed bug resulting in occasional unending download loop of GPS fixes for receivers
+
+# motus 4.0.3
+
+### Bug fixes
+* fixed bug resulting in error "no applicable method for 'db_has_table'..."
+
+# motus 4.0.2
+
+### Bug fixes
+* fixed rounding error in `filterByActivity()` resulting in mismatched `hourBins`
+* fixed incorrect receiver types and model assignment for CTT receivers
+
+# motus 4.0.1
+
+### Bug fixes
+* Corrected the server address
+
 # motus 4.0.0
+
 ### Small Changes
-* Add `test` to metadata in `tagDeps` table (`tagDeployTest` in `alltags` and
-  `alltagsGPS` views)
+* Add `test` to metadata in `tagDeps` table to identify test deployments 
+  (`tagDeployTest` in `alltags` and `alltagsGPS` views)
 * Add `age` and `sex` to metadata in `tagDeps` table
+* For CTT SensorStation V2
+    * Add `lat_mean`, `lon_mean`, and `n_fixes` to `gps` table
+    * Add `nodets`, `firmware`, `solarVolt`, `solarCurrent`, `solarCurrentCumul`, `lat`, and `lon` to `nodeData` table
+    * Add `validated` to `hits` table
+
+### Bug fixes
+* Downloading hits no longer fails if extra columns are supplied by the server
+
+### Internal changes
+* Internal workings of major `motusUpdateXXX()` functions split into multiple
+  smaller functions to make testing more efficient
+* Added mockery package for mock testing
 
 # motus 3.0.1
 
@@ -12,11 +76,12 @@
 * New function `getGPS()` adds GPS fields to data
 * Remove NOT NULL constraint on `motusTagID`s in ambiguous tag view
 
-### Bug fix
+### Bug fixes
 * Receivers updating to the new version errored on the download start
 * Allow renaming (if possible) of large databases on data updates
 * Continue checking for activity/nodeData even if first batch returns 0
 * `nodeDataId` is corrected to `nodeDataID`
+* Warn users with custom views if they need to be removed prior to updating
 
 # motus 3.0.0 (2019-10-16)
 

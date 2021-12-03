@@ -4,8 +4,14 @@
 \alias{getRuns}
 \title{Returns a dataframe containing runs}
 \usage{
-getRuns(src, ts.min = NA, ts.max = NA, match.partial = TRUE,
-  motusTagID = c(), ambigID = c())
+getRuns(
+  src,
+  ts.min = NA,
+  ts.max = NA,
+  match.partial = TRUE,
+  motusTagID = c(),
+  ambigID = c()
+)
 }
 \arguments{
 \item{src}{dplyr sqlite src, as returned by \code{dplyr::src_sqlite()}}
@@ -35,7 +41,4 @@ works. When \code{match.partial} is FALSE, \code{runID}'s are only included when
 when they entirely contained in the specified range). When match.partial is
 TRUE, \code{runID}'s are returned whenever the run partially matches the specified
 period.
-}
-\author{
-Denis Lepage, Bird Studies Canada
 }

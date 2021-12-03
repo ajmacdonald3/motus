@@ -5,9 +5,16 @@
 \title{Export results of an sqlite query to an .rds file using limited
 memory (Linux, OS X; not Windows)}
 \usage{
-sqliteToRDS(con, query, bind.data = data.frame(), out, classes = NULL,
-  rowsPerBlock = 10000, stringsAsFactors = TRUE,
-  factorQueries = NULL)
+sqliteToRDS(
+  con,
+  query,
+  bind.data = data.frame(),
+  out,
+  classes = NULL,
+  rowsPerBlock = 10000,
+  stringsAsFactors = TRUE,
+  factorQueries = NULL
+)
 }
 \arguments{
 \item{con}{connection to sqlite database}
@@ -120,7 +127,4 @@ This function currently only works on linux (and OS X?)
 because we use shell commands \code{cat} and \code{bzip2}.  The author
 would appreciate information on how to implement this for
 Windows platforms.
-}
-\author{
-John Brzustowski \email{jbrzusto@REMOVE_THIS_PART_fastmail.fm}
 }

@@ -14,10 +14,10 @@
 #' }
 #'
 #' @noRd
-#'
-#' @author John Brzustowski \email{jbrzusto@@REMOVE_THIS_PART_fastmail.fm}
 
-srvSizeOfUpdateForTagProject = function(projectID, batchID=0) {
-    x = srvQuery(API=motus_vars$API_SIZE_OF_UPDATE_FOR_TAG_PROJECT, params=list(projectID=projectID, batchID=batchID))
+srvSizeOfUpdateForTagProject = function(projectID, batchID=0, verbose = FALSE) {
+    x = srvQuery(API=motus_vars$API_SIZE_OF_UPDATE_FOR_TAG_PROJECT, 
+                 params=list(projectID=projectID, batchID=batchID),
+                 verbose = verbose)
     return (structure(x, class = "data.frame", row.names=seq(along=x[[1]])))
 }

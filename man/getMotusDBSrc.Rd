@@ -4,8 +4,12 @@
 \alias{getMotusDBSrc}
 \title{Get the src_sqlite for a receiver or tag database}
 \usage{
-getMotusDBSrc(recv = NULL, proj = NULL, create = FALSE,
-  dbDir = motus_vars$dbDir)
+getMotusDBSrc(
+  recv = NULL,
+  proj = NULL,
+  create = FALSE,
+  dbDir = motus_vars$dbDir
+)
 }
 \arguments{
 \item{recv}{receiver serial number}
@@ -29,7 +33,4 @@ will be empty, but have the correct schema.
 Receiver database files have names like "SG-1234BBBK06EA.motus" or
 "Lotek-12345.motus", and project database files have names like
 "project-52.motus".
-}
-\author{
-John Brzustowski \email{jbrzusto@REMOVE_THIS_PART_fastmail.fm}
 }

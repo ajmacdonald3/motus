@@ -10,26 +10,31 @@
 #' @seealso \code{\link{motus_vars}}
 #'
 #' @noRd
-#'
-#' @author John Brzustowski \email{jbrzusto@@REMOVE_THIS_PART_fastmail.fm}
 
-srvAuth = function() {
-    ## force lookup of userLogin and userPassword using their active bindings.
-    ## (we don't want to use lazy evaluation here by instead passing the list(...)
-    ## expression to srvQuery
-
-    pars = list(user=motus_vars$userLogin, password=motus_vars$userPassword)
-    tryCatch({
-        res = srvQuery(motus_vars$API_DATA_AUTHENTICATE, pars, auth=FALSE)
-        motus_vars$projects = res$projects
-        motus_vars$receivers = res$receivers
-        motus_vars$dataVersion = res$dataVersion
-        ## message(sprintf("Got authentication token from %s  ", motus_vars$dataServerURL))
-        return(res$authToken)
-    }, error = function(e) {
-        motus_vars$userLogin = NULL
-        motus_vars$userPassword = NULL
-        stop("Login failed with error message\n'", e$message, "'",
-             call. = FALSE)
-    })
+srvAuth = function(verbose = FALSE) {
+  ## force lookup of userLogin and userPassword using their active bindings.
+  ## (we don't want to use lazy evaluation here by instead passing the list(...)
+  ## expression to srvQuery
+  pars <- list(user = motus_vars$userLogin, 
+               password = motus_vars$userPassword,
+               pkgVersion = pkg_version())
+  tryCatch({
+    res <- srvQuery(motus_vars$API_DATA_AUTHENTICATE, pars, auth=FALSE, verbose = verbose)
+    motus_vars$projects <- res$projects
+    motus_vars$receivers <- res$receivers
+    motus_vars$dataVersion <- res$dataVersion
+    motus_vars$currentPkgVersion <- res$currentPkgVersion
+    
+    if("versionWarn" %in% names(res)) warning(res$versionWarn, call. = FALSE)
+    
+    return(res$authToken)
+  }, error = function(e) {
+    motus_vars$userLogin = NULL
+    motus_vars$userPassword = NULL
+    stop("Login failed with error message\n'", e$message, "'",
+         call. = FALSE)
+  })
 }
+
+# This way we can use mocking in tests
+pkg_version <- function() utils::packageDescription("motus", fields = "Version")

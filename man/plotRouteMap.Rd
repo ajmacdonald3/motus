@@ -4,8 +4,15 @@
 \alias{plotRouteMap}
 \title{Map of tag routes and sites coloured by id}
 \usage{
-plotRouteMap(data, zoom = 3, lat = NULL, lon = NULL,
-  maptype = "terrain", recvStart = NULL, recvEnd = NULL)
+plotRouteMap(
+  data,
+  zoom = 3,
+  lat = NULL,
+  lon = NULL,
+  maptype = "terrain",
+  recvStart = NULL,
+  recvEnd = NULL
+)
 }
 \arguments{
 \item{data}{a .motus sql file}
@@ -50,7 +57,4 @@ sql.motus <- tagme(176, update = FALSE,
 # Plot routemap of all detection data, with "terrain" maptype, and receivers
 # active between 2016-01-01 and 2017-01-01
 plotRouteMap(sql.motus, recvStart = "2016-01-01", recvEnd = "2016-12-31")
-}
-\author{
-Zoe Crysler \email{zcrysler@gmail.com}
 }
